@@ -12,14 +12,6 @@ export function getDroppedFiles() {
     return droppedFiles;
 }
 
-export function setIsSeeking(value) {
-    isSeeking = value;
-}
-
-export function getIsSeeking() {
-    return isSeeking;
-}
-
 export function addVideo(file) {
     console.log("Adding video:", file.name);
     droppedFiles.push(file);
@@ -28,8 +20,10 @@ export function addVideo(file) {
 
 export function openAllVideos() {
     console.log("Open all button clicked");
-    closeAllWindows();
-    console.log("Number of dropped files:", droppedFiles.length);
+    if (videoWindows.length > 0) {
+        alert("Videos are already open. Please reset before opening new windows.");
+        return;
+    }
     droppedFiles.forEach((file, index) => openVideo(file, index));
 }
 
@@ -153,6 +147,14 @@ export function resetVideoState() {
     masterWindow = null;
     isPlaying = false;
     isSeeking = false;
+}
+
+export function setIsSeeking(value) {
+    isSeeking = value;
+}
+
+export function getIsSeeking() {
+    return isSeeking;
 }
 
 export { masterWindow, videoWindows };
