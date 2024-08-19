@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Drop and Control Service</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="drop-zone">
+        <p>Drop video files here</p>
+    </div>
+    <div id="video-previews"></div>
+    <div id="time-display">
+        <span>Current: <span id="current-time">00:00:00</span></span>
+        <span>Total: <span id="total-time">00:00:00</span></span>
+        <span>Left: <span id="time-left">00:00:00</span></span>
+    </div>
+    <input type="range" id="progress-bar" min="0" max="100" value="0">
+    <div>
+        <button id="open-all">Open All Videos</button>
+        <button id="toggle-play">Play</button>
+        <button id="reset">Reset</button>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
