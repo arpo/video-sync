@@ -5,6 +5,7 @@ import { checkVideoLengths } from './utils.js';
 let droppedFiles = [];
 let videoWindows = [];
 let masterAudio = null;
+let masterVideo = null;
 let isPlaying = false;
 let isSeeking = false;
 let onFileAddedCallback = null;
@@ -19,8 +20,11 @@ export function setOnFileAddedCallback(callback) {
 
 export function addMedia(file) {
     console.log("Adding media:", file.name);
-    if (file.type.startsWith('audio/') && !masterAudio) {
-        setupAudioMaster(file);
+    if (file.type.startsWith('audio/')) {
+        if (!masterAudio) {
+            setupAudioMaster(file);
+        }
+        droppedFiles.unshift(file); // Add audio file to the beginning of the array
     } else if (file.type.startsWith('video/')) {
         droppedFiles.push(file);
     }
@@ -66,7 +70,11 @@ export function openAllVideos() {
         alert("Videos are already open. Please reset before opening new windows.");
         return;
     }
-    droppedFiles.forEach((file, index) => openVideo(file, index));
+    droppedFiles.forEach((file, index) => {
+        if (file.type.startsWith('video/')) {
+            openVideo(file, index);
+        }
+    });
 }
 
 export function openVideo(file, index) {
@@ -84,21 +92,63 @@ export function openVideo(file, index) {
             return;
         }
         video.src = videoUrl;
-        video.muted = true; // Mute all videos if there's a master audio
-
-        video.addEventListener('loadedmetadata', () => {
-            if (!masterAudio) {
+        
+        if (!masterAudio && !masterVideo) {
+            // This is the first video and there's no audio master, so make it the master
+            masterVideo = video;
+            video.muted = false;
+            videoWindow.document.title = "Master Video: " + file.name;
+            
+            video.addEventListener('loadedmetadata', () => {
                 updateTotalTime(video.duration);
                 document.getElementById('progress-bar').max = Math.floor(video.duration);
-            }
-            checkVideoLengths(video.duration);
-        });
+                checkVideoLengths(video.duration);
+            });
+
+            video.addEventListener('timeupdate', () => {
+                if (!isSeeking) {
+                    syncSlaveVideos();
+                    updateTimeDisplay(video.currentTime, video.duration);
+                }
+            });
+
+            video.addEventListener('play', () => {
+                isPlaying = true;
+                updateToggleButton(true);
+                syncPlayState(true);
+            });
+
+            video.addEventListener('pause', () => {
+                isPlaying = false;
+                updateToggleButton(false);
+                syncPlayState(false);
+            });
+        } else {
+            // This is a slave video, mute it
+            video.muted = true;
+            videoWindow.document.title = "Slave Video (Muted): " + file.name;
+        }
+
+        video.addEventListener('seeked', preventDesync);
 
         videoWindow.addEventListener('unload', () => {
             URL.revokeObjectURL(videoUrl);
             const index = videoWindows.indexOf(videoWindow);
             if (index > -1) {
                 videoWindows.splice(index, 1);
+            }
+            if (video === masterVideo) {
+                masterVideo = null;
+                // If there are other videos, make the first one the new master
+                if (videoWindows.length > 0) {
+                    const newMasterWindow = videoWindows[0];
+                    const newMasterVideo = newMasterWindow.document.querySelector('video');
+                    if (newMasterVideo) {
+                        masterVideo = newMasterVideo;
+                        newMasterVideo.muted = false;
+                        newMasterWindow.document.title = "Master Video: " + droppedFiles[videoWindows.indexOf(newMasterWindow)].name;
+                    }
+                }
             }
         });
     });
@@ -116,6 +166,7 @@ export function closeAllWindows() {
         masterAudio.remove();
         masterAudio = null;
     }
+    masterVideo = null;
     isPlaying = false;
     updateToggleButton(false);
     resetTimeDisplay();
@@ -128,17 +179,20 @@ export function togglePlay() {
         } else {
             masterAudio.play();
         }
-    } else if (videoWindows.length > 0) {
-        videoWindows.forEach(win => {
-            const video = win.document.querySelector('video');
-            if (video) {
-                if (isPlaying) {
-                    video.pause();
-                } else {
-                    video.play();
-                }
-            }
-        });
+    } else if (masterVideo) {
+        if (isPlaying) {
+            masterVideo.pause();
+        } else {
+            masterVideo.play();
+        }
+    }
+}
+
+function preventDesync(event) {
+    const targetVideo = event.target;
+    const masterMedia = masterAudio || masterVideo;
+    if (masterMedia && Math.abs(targetVideo.currentTime - masterMedia.currentTime) > 0.5) {
+        targetVideo.currentTime = masterMedia.currentTime;
     }
 }
 
@@ -150,6 +204,7 @@ export function resetVideoState() {
         masterAudio.remove();
         masterAudio = null;
     }
+    masterVideo = null;
     isPlaying = false;
     isSeeking = false;
 }
@@ -162,4 +217,4 @@ export function getIsSeeking() {
     return isSeeking;
 }
 
-export { masterAudio, videoWindows };
+export { masterAudio, masterVideo, videoWindows };
