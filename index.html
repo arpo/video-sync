@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Drop and Control Service</title>
+    <title>Audio-Video Sync Service</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="drop-zone">
-        <p>Drop video files here</p>
+        <p>Drop audio or video files here</p>
     </div>
-    <div id="video-previews"></div>
+    <div id="file-list">
+        <h3>Dropped Files:</h3>
+        <ul id="dropped-files-list"></ul>
+    </div>
     <div id="time-display">
         <span>Current: <span id="current-time">00:00:00</span></span>
         <span>Total: <span id="total-time">00:00:00</span></span>

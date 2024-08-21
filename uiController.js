@@ -1,7 +1,6 @@
 import { closeAllWindows, resetVideoState } from './videoController.js';
 import { formatTime } from './utils.js';
 
-const videoPreviews = document.getElementById('video-previews');
 const dropZone = document.getElementById('drop-zone');
 const togglePlayBtn = document.getElementById('toggle-play');
 const totalTimeDisplay = document.getElementById('total-time');
@@ -12,7 +11,6 @@ const progressBar = document.getElementById('progress-bar');
 export function initializeUI() {
     updateToggleButton(false);
     resetTimeDisplay();
-    videoPreviews.style.display = 'none';
 }
 
 export function updatePreviewWidths() {
@@ -31,6 +29,7 @@ export function updateToggleButton(isPlaying) {
 
 export function updateTotalTime(duration) {
     totalTimeDisplay.textContent = formatTime(duration);
+    progressBar.max = Math.floor(duration);
 }
 
 export function updateTimeDisplay(currentTime, duration) {
@@ -51,23 +50,25 @@ export function resetWithConfirmation() {
         console.log("Reset confirmed");
         closeAllWindows();
         resetVideoState();
-        videoPreviews.innerHTML = '';
         dropZone.style.display = 'block';
-        videoPreviews.style.display = 'none';
-        dropZone.querySelector('p').textContent = 'Drop video files here';
-        updatePreviewWidths();
+        dropZone.querySelector('p').textContent = 'Drop audio or video files here';
         resetTimeDisplay();
+        return true;
     } else {
         console.log("Reset cancelled");
+        return false;
     }
 }
 
-export function addVideoPreview(file) {
-    const previewContainer = document.createElement('div');
-    previewContainer.className = 'video-preview';
-    const video = document.createElement('video');
-    video.src = URL.createObjectURL(file);
-    video.muted = true;
-    previewContainer.appendChild(video);
-    videoPreviews.appendChild(previewContainer);
+export function updateDropZone(hasFiles) {
+    if (hasFiles) {
+        dropZone.style.display = 'none';
+    } else {
+        dropZone.style.display = 'block';
+        dropZone.querySelector('p').textContent = 'Drop audio or video files here';
+    }
+}
+
+export function showError(message) {
+    alert(message);
 }

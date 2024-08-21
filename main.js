@@ -1,7 +1,6 @@
-import { initializeUI, updatePreviewWidths } from './uiController.js';
-import { addVideo, openAllVideos, togglePlay, masterWindow, setIsSeeking, getIsSeeking } from './videoController.js';
-import { resetWithConfirmation } from './uiController.js';
 import { syncSlaveVideos } from './syncController.js';
+import { initializeUI, resetWithConfirmation, updatePreviewWidths } from './uiController.js';
+import { addMedia, getDroppedFiles, masterAudio, openAllVideos, setIsSeeking, setOnFileAddedCallback, togglePlay, videoWindows } from './videoController.js';
 
 console.log("Script is running");
 
@@ -10,6 +9,19 @@ const openAllBtn = document.getElementById('open-all');
 const togglePlayBtn = document.getElementById('toggle-play');
 const resetBtn = document.getElementById('reset');
 const progressBar = document.getElementById('progress-bar');
+const droppedFilesList = document.getElementById('dropped-files-list');
+
+function updateFileList() {
+    const files = getDroppedFiles();
+    droppedFilesList.innerHTML = '';
+    files.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${index + 1}. ${file.name} (${file.type.startsWith('audio/') ? 'Audio' : 'Video'})`;
+        droppedFilesList.appendChild(li);
+    });
+}
+
+setOnFileAddedCallback(updateFileList);
 
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -21,42 +33,46 @@ dropZone.addEventListener('drop', (e) => {
     e.stopPropagation();
     const files = Array.from(e.dataTransfer.files);
     files.forEach(file => {
-        if (file.type.startsWith('video/')) {
-            addVideo(file);
+        if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
+            addMedia(file);
         }
     });
     updatePreviewWidths();
-    console.log("Files dropped, total videos:", files.length);
+    console.log("Files dropped, total media:", files.length);
 });
 
 openAllBtn.addEventListener('click', () => {
-    console.log("Open all button clicked");
+    console.log("Open all media clicked");
     openAllVideos();
 });
 
 togglePlayBtn.addEventListener('click', togglePlay);
-resetBtn.addEventListener('click', resetWithConfirmation);
+resetBtn.addEventListener('click', () => {
+    resetWithConfirmation();
+    updateFileList();
+});
 
 progressBar.addEventListener('input', () => {
     setIsSeeking(true);
 });
 
 progressBar.addEventListener('change', () => {
-    if (!masterWindow || masterWindow.closed) {
-        console.log("Master window is not available. Cannot seek.");
-        return;
-    }
-    const masterVideo = masterWindow.document.querySelector('video');
-    if (!masterVideo) {
-        console.log("Master video element not found.");
-        return;
-    }
     const seekTime = progressBar.value;
-    masterVideo.currentTime = seekTime;
+    if (masterAudio) {
+        masterAudio.currentTime = seekTime;
+    } else if (videoWindows.length > 0) {
+        videoWindows.forEach(win => {
+            const video = win.document.querySelector('video');
+            if (video) {
+                video.currentTime = seekTime;
+            }
+        });
+    }
     syncSlaveVideos();
     setIsSeeking(false);
 });
 
 initializeUI();
+updateFileList();
 
 console.log("Script finished loading");
