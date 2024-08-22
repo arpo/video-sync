@@ -4,7 +4,7 @@ import { resetWithConfirmation } from './uiController.js';
 import { syncSlaveVideos } from './syncController.js';
 import { 
     setIntensityThreshold, 
-    setIntensityThresholdMin,  // Add this line
+    setIntensityThresholdMin,  
     setBassRangeStart, 
     setBassRangeEnd, 
     setHardFlashThreshold, 
@@ -93,13 +93,8 @@ function updateFrequencyDisplay() {
 
 function setInitialValues() {
     intensityThresholdInput.value = INITIAL_VALUES.INTENSITY_THRESHOLD;
-    intensityThresholdInput.min = INITIAL_VALUES.INTENSITY_THRESHOLD_MIN;  // Add this line
+    intensityThresholdInput.min = INITIAL_VALUES.INTENSITY_THRESHOLD_MIN;
     intensityThresholdValue.textContent = INITIAL_VALUES.INTENSITY_THRESHOLD;
-    
-    
-    bassRangeStartInput.value = INITIAL_VALUES.BASS_RANGE_START;
-    bassRangeEndInput.value = INITIAL_VALUES.BASS_RANGE_END;
-    updateFrequencyDisplay();
     
     hardFlashThresholdInput.value = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
     hardFlashThresholdValue.textContent = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
@@ -109,7 +104,22 @@ function setInitialValues() {
 
     saturationInput.value = INITIAL_VALUES.SATURATION;
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
+
+    // Set the actual values in the audio analyzer
+    setIntensityThreshold(INITIAL_VALUES.INTENSITY_THRESHOLD);
+    setIntensityThresholdMin(INITIAL_VALUES.INTENSITY_THRESHOLD_MIN);
+    setHardFlashThreshold(INITIAL_VALUES.HARD_FLASH_THRESHOLD);
+    setHue(INITIAL_VALUES.HUE);
+    setSaturation(INITIAL_VALUES.SATURATION);
 }
+
+const resetControlsBtn = document.getElementById('reset-controls');
+
+
+
+resetControlsBtn.addEventListener('click', () => {
+    setInitialValues();
+});
 
 
 intensityThresholdInput.addEventListener('input', (e) => {

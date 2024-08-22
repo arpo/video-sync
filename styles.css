@@ -61,6 +61,21 @@ body {
     width: 100%;
 }
 
+#reset-controls {
+    display: block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#reset-controls:hover {
+    background-color: #45a049;
+}
+
 #drop-zone {
     width: 100%;
     height: 100px;
