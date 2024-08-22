@@ -45,7 +45,7 @@ function setupAudioMaster(file) {
     });
 
     masterAudio.addEventListener('timeupdate', () => {
-        if (!isSeeking) {
+        if (!isSeeking && masterAudio) {
             syncSlaveVideos();
             updateTimeDisplay(masterAudio.currentTime, masterAudio.duration);
         }
