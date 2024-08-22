@@ -8,7 +8,8 @@ export const INITIAL_VALUES = {
     BASS_RANGE_START: 200,
     BASS_RANGE_END: 280,
     HARD_FLASH_THRESHOLD: 0.5,
-    HUE: 200
+    HUE: 200,
+    SATURATION: 100
 };
 
 let INTENSITY_THRESHOLD = INITIAL_VALUES.INTENSITY_THRESHOLD;
@@ -16,6 +17,7 @@ let BASS_RANGE_START = INITIAL_VALUES.BASS_RANGE_START;
 let BASS_RANGE_END = INITIAL_VALUES.BASS_RANGE_END;
 let HARD_FLASH_THRESHOLD = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
 let HUE = INITIAL_VALUES.HUE;
+let SATURATION = INITIAL_VALUES.SATURATION;
 
 export function setupAudioAnalyzer(audioElement) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -59,7 +61,7 @@ function analyzeBeat() {
 
 function flashBackground(normalizedIntensity) {
     const brightness = Math.floor(normalizedIntensity * 100);
-    document.body.style.backgroundColor = `hsl(${HUE}, 100%, ${brightness}%)`;
+    document.body.style.backgroundColor = `hsl(${HUE}, ${SATURATION}%, ${brightness}%)`;
 }
 
 function resetBackground() {
@@ -92,6 +94,10 @@ export function setHardFlashThreshold(value) {
 
 export function setHue(value) {
     HUE = value;
+}
+
+export function setSaturation(value) {  // Add this function
+    SATURATION = value;
 }
 
 export function getBassRangeFrequencies() {

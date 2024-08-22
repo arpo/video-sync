@@ -8,6 +8,7 @@ import {
     setBassRangeEnd, 
     setHardFlashThreshold, 
     setHue,
+    setSaturation,  // Add this line
     getBassRangeFrequencies,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
@@ -30,6 +31,8 @@ const hardFlashThresholdInput = document.getElementById('hard-flash-threshold');
 const hardFlashThresholdValue = document.getElementById('hard-flash-threshold-value');
 const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
+const saturationInput = document.getElementById('saturation');
+const saturationValue = document.getElementById('saturation-value');
 
 function updateFrequencyDisplay() {
     const { start, end } = getBassRangeFrequencies();
@@ -50,6 +53,9 @@ function setInitialValues() {
     
     hueInput.value = INITIAL_VALUES.HUE;
     hueValue.textContent = INITIAL_VALUES.HUE;
+
+    saturationInput.value = INITIAL_VALUES.SATURATION;
+    saturationValue.textContent = INITIAL_VALUES.SATURATION;
 }
 
 intensityThresholdInput.addEventListener('input', (e) => {
@@ -80,6 +86,12 @@ hueInput.addEventListener('input', (e) => {
     const value = e.target.value;
     setHue(Number(value));
     hueValue.textContent = value;
+});
+
+saturationInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setSaturation(Number(value));
+    saturationValue.textContent = value;
 });
 
 // Set initial values and update frequency display

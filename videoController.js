@@ -47,9 +47,6 @@ function createVideoPreview(file) {
     document.getElementById('video-previews').appendChild(previewContainer);
     previewVideos.push(video);
     updatePreviewWidths();
-    
-    // Start playing the preview
-    // video.play().catch(e => console.log("Preview autoplay prevented:", e));
 }
 
 export function syncPreviewVideos(currentTime, isPlaying) {
