@@ -17,7 +17,7 @@ import {
 const dropZone = document.getElementById('drop-zone');
 const openAllBtn = document.getElementById('open-all');
 const togglePlayBtn = document.getElementById('toggle-play');
-const resetBtn = document.getElementById('reset');
+const initBtn = document.getElementById('initBtn');
 const progressBar = document.getElementById('progress-bar');
 const droppedFilesList = document.getElementById('dropped-files-list');
 
@@ -135,7 +135,7 @@ openAllBtn.addEventListener('click', () => {
 
 togglePlayBtn.addEventListener('click', togglePlay);
 
-resetBtn.addEventListener('click', () => {
+initBtn.addEventListener('click', () => {
     if (resetWithConfirmation()) {
         updateFileList();
         document.getElementById('video-previews').innerHTML = ''; // Clear preview videos

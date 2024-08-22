@@ -69,8 +69,7 @@ export function resetTimeDisplay() {
 }
 
 export function resetWithConfirmation() {
-    if (confirm("Are you sure you want to reset? This will close all video windows and clear the current session.")) {
-        console.log("Reset confirmed");
+    if (confirm("Are you sure you want to init? This will close all video windows and clear the current session.")) {
         closeAllWindows();
         resetVideoState();
         dropZone.style.display = 'block';

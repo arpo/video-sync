@@ -3,8 +3,9 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     display: flex;
+    font-size: 13px;
     flex-direction: column;
     align-items: center;
     padding: 20px;
@@ -27,6 +28,8 @@ body {
     flex-grow: 1;
     flex-basis: 0;
     min-width: 160px; /* Minimum width for each preview */
+    max-height: 250px;
+    border-radius: 10px;
     background-color: #333;
     display: flex;
     align-items: center;
@@ -58,7 +61,7 @@ body {
 
 #drop-zone {
     width: 100%;
-    height: 200px;
+    height: 100px;
     border: 2px dashed #666;
     border-radius: 20px;
     text-align: center;
@@ -66,6 +69,19 @@ body {
     margin: 20px 0;
     /* background-color: #161616; */
     box-sizing: border-box;
+}
+
+#dropped-files-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#dropped-files-list li {
+    display: inline-block;
+    margin-right: 10px; /* Adjust spacing between items as needed */
+    color: #999;
+    font-size: 0.7rem;
 }
 
 #media-previews {
@@ -105,46 +121,67 @@ body {
     box-sizing: border-box;
 }
 
-#progress-bar {
+/* Default (smaller) range input */
+input[type="range"] {
     width: 100%;
-    margin: 20px 0;
+    margin: 10px 0;
     -webkit-appearance: none;
     background: #4a4a4a;
     outline: none;
     opacity: 0.7;
     transition: opacity .2s;
+    border-radius: 10px;
+    padding: 3px;
 }
 
-#progress-bar:hover {
+input[type="range"]:hover {
     opacity: 1;
 }
 
-#progress-bar::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     background: #4CAF50;
     cursor: pointer;
     border-radius: 50%;
 }
 
-#progress-bar::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
+input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
     background: #4CAF50;
     cursor: pointer;
     border-radius: 50%;
 }
+
+/* Large range input */
+input[type="range"].large {
+    margin: 20px 0;
+    border-radius: 17px;
+    padding: 5px;
+}
+
+input[type="range"].large::-webkit-slider-thumb {
+    width: 25px;
+    height: 25px;
+}
+
+input[type="range"].large::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+}
+
 
 button {
     margin: 5px;
-    padding: 10px 20px;
+    padding: 8px 15px;
     font-size: 1em;
     background-color: #4CAF50;
-    color: #000;
+    color: #ffffff;
     border: none;
-    border-radius: 5px;
+    border-radius: 15px;
     cursor: pointer;
 }
 
