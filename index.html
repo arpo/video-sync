@@ -51,15 +51,17 @@
         <label for="hue">Hue: <span id="hue-value">200</span></label>
         <input type="range" id="hue" min="0" max="360" value="200">
 
-        Saturation: <span id="saturation-value">100</span>%
-        <input type="range" id="saturation" min="0" max="100" value="100">
+        <div class="saturation-control">
+            <input type="checkbox" id="saturation-toggle" checked>
+            <label for="saturation-toggle">Saturation: <span id="saturation-value">100</span>%</label>
+        </div>
 
         <label for="bass-range-start">Freq Start: <span id="bass-range-start-value">200</span> Hz</label>
         <input type="range" id="bass-range-start" min="20" max="1000" value="200">
         
         <label for="bass-range-end">Freq End: <span id="bass-range-end-value">280</span> Hz</label>
         <input type="range" id="bass-range-end" min="21" max="1000" value="280">
-        
+
         <button id="reset-controls">Reset Controls</button>
     </div>
     <script type="module" src="main.js"></script>

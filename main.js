@@ -33,8 +33,10 @@ const hardFlashThresholdInput = document.getElementById('hard-flash-threshold');
 const hardFlashThresholdValue = document.getElementById('hard-flash-threshold-value');
 const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
-const saturationInput = document.getElementById('saturation');
+// const saturationInput = document.getElementById('saturation');
+const saturationToggle = document.getElementById('saturation-toggle');
 const saturationValue = document.getElementById('saturation-value');
+
 
 function handleMIDIMessage(note, value) {
     switch (note) {
@@ -47,9 +49,9 @@ function handleMIDIMessage(note, value) {
         case 2:  // Third knob
             updateHue(value);
             break;
-        case 1:  // Fourth knob
-            updateSaturation(value);
-            break;
+        // case 1:  // Fourth knob
+        //     updateSaturation(value);
+        //     break;
     }
 }
 
@@ -75,10 +77,10 @@ function updateHue(value) {
 }
 
 function updateSaturation(value) {
-    const mappedValue = mapMIDIValueToRange(value, 0, 100);
+    const mappedValue = value > 63 ? 100 : 0;  // Threshold at midpoint of MIDI range
     setSaturation(mappedValue);
-    saturationInput.value = mappedValue;
-    saturationValue.textContent = Math.round(mappedValue);
+    saturationToggle.checked = mappedValue === 100;
+    saturationValue.textContent = mappedValue;
 }
 
 // Initialize MIDI and set up the callback
@@ -102,14 +104,17 @@ function setInitialValues() {
     hueInput.value = INITIAL_VALUES.HUE;
     hueValue.textContent = INITIAL_VALUES.HUE;
 
-    saturationInput.value = INITIAL_VALUES.SATURATION;
-    saturationValue.textContent = INITIAL_VALUES.SATURATION;
+    // saturationInput.value = INITIAL_VALUES.SATURATION;
+    // saturationValue.textContent = INITIAL_VALUES.SATURATION;
 
     // Set the actual values in the audio analyzer
     setIntensityThreshold(INITIAL_VALUES.INTENSITY_THRESHOLD);
     setIntensityThresholdMin(INITIAL_VALUES.INTENSITY_THRESHOLD_MIN);
     setHardFlashThreshold(INITIAL_VALUES.HARD_FLASH_THRESHOLD);
     setHue(INITIAL_VALUES.HUE);
+    
+    saturationToggle.checked = INITIAL_VALUES.SATURATION === 100;
+    saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
 }
 
@@ -121,6 +126,11 @@ resetControlsBtn.addEventListener('click', () => {
     setInitialValues();
 });
 
+saturationToggle.addEventListener('change', (e) => {
+    const value = e.target.checked ? 100 : 0;
+    setSaturation(value);
+    saturationValue.textContent = value;
+})
 
 intensityThresholdInput.addEventListener('input', (e) => {
     const value = e.target.value;
@@ -159,11 +169,11 @@ hueInput.addEventListener('input', (e) => {
     hueValue.textContent = value;
 });
 
-saturationInput.addEventListener('input', (e) => {
-    const value = e.target.value;
-    setSaturation(Number(value));
-    saturationValue.textContent = value;
-});
+// saturationInput.addEventListener('input', (e) => {
+//     const value = e.target.value;
+//     setSaturation(Number(value));
+//     saturationValue.textContent = value;
+// });
 
 // Set initial values and update frequency display
 setInitialValues();
