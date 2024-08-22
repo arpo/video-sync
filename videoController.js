@@ -1,8 +1,9 @@
-import { updateToggleButton, updateTotalTime, updateTimeDisplay, resetTimeDisplay } from './uiController.js';
+import { updateToggleButton, updateTotalTime, updateTimeDisplay, resetTimeDisplay, updatePreviewWidths, updateDropZone } from './uiController.js';
 import { syncSlaveVideos, syncPlayState } from './syncController.js';
 import { checkVideoLengths } from './utils.js';
 import { setupAudioAnalyzer, stopAnalyzing } from './audioAnalyzer.js';
 
+let previewVideos = [];
 let droppedFiles = [];
 let videoWindows = [];
 let masterAudio = null;
@@ -25,13 +26,43 @@ export function addMedia(file) {
         if (!masterAudio) {
             setupAudioMaster(file);
         }
-        droppedFiles.unshift(file); // Add audio file to the beginning of the array
+        droppedFiles.unshift(file);
     } else if (file.type.startsWith('video/')) {
         droppedFiles.push(file);
+        createVideoPreview(file);
     }
     if (onFileAddedCallback) {
         onFileAddedCallback(file);
     }
+}
+
+function createVideoPreview(file) {
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'video-preview';
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    video.muted = true;
+    video.loop = false; // Add this line to make the preview loop
+    previewContainer.appendChild(video);
+    document.getElementById('video-previews').appendChild(previewContainer);
+    previewVideos.push(video);
+    updatePreviewWidths();
+    
+    // Start playing the preview
+    video.play().catch(e => console.log("Preview autoplay prevented:", e));
+}
+
+export function syncPreviewVideos(currentTime, isPlaying) {
+    previewVideos.forEach(video => {
+        if (Math.abs(video.currentTime - currentTime) > 0.5) {
+            video.currentTime = currentTime;
+        }
+        if (isPlaying && video.paused) {
+            video.play().catch(e => console.log("Preview play prevented:", e));
+        } else if (!isPlaying && !video.paused) {
+            video.pause();
+        }
+    });
 }
 
 function setupAudioMaster(file) {
@@ -77,6 +108,7 @@ export function openAllVideos() {
             openVideo(file, index);
         }
     });
+    updateDropZone(true); // Hide the drop zone
 }
 
 export function openVideo(file, index) {
@@ -201,16 +233,18 @@ function preventDesync(event) {
 export function resetVideoState() {
     droppedFiles = [];
     videoWindows = [];
+    previewVideos = [];
     if (masterAudio) {
         masterAudio.pause();
         masterAudio.remove();
         masterAudio = null;
-        stopAnalyzing();
     }
     masterVideo = null;
     isPlaying = false;
     isSeeking = false;
+    document.getElementById('video-previews').innerHTML = '';
 }
+
 
 export function setIsSeeking(value) {
     isSeeking = value;

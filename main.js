@@ -122,9 +122,12 @@ openAllBtn.addEventListener('click', () => {
 });
 
 togglePlayBtn.addEventListener('click', togglePlay);
+
 resetBtn.addEventListener('click', () => {
-    resetWithConfirmation();
-    updateFileList();
+    if (resetWithConfirmation()) {
+        updateFileList();
+        document.getElementById('video-previews').innerHTML = ''; // Clear preview videos
+    }
 });
 
 progressBar.addEventListener('input', () => {
@@ -143,7 +146,7 @@ progressBar.addEventListener('change', () => {
             }
         });
     }
-    syncSlaveVideos();
+    syncSlaveVideos(); // This will now also sync preview videos
     setIsSeeking(false);
 });
 
