@@ -36,12 +36,11 @@ const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
 const saturationToggle = document.getElementById('saturation-toggle');
 const saturationValue = document.getElementById('saturation-value');
-const strobeIntensityInput = document.getElementById('strobe-intensity');
-const strobeIntensityValue = document.getElementById('strobe-intensity-value');
+const strobeButton = document.getElementById('strobe-button');
 const strobeEffect = document.getElementById('strobe-effect');
 
+let strobeTimeout;
 let strobeInterval;
-
 function handleMIDIMessage(note, value) {
     switch (note) {
         case 13:  // First knob
@@ -54,19 +53,8 @@ function handleMIDIMessage(note, value) {
             updateHue(value);
             break;
         case 1:  // Fourth knob
-            updateStrobeIntensity(value);
+            // updateStrobeIntensity(value);
             break;
-    }
-}
-
-function updateStrobeIntensity(value) {
-    const mappedValue = Math.round(mapMIDIValueToRange(value, 0, 100));
-    strobeIntensityInput.value = mappedValue;
-    strobeIntensityValue.textContent = mappedValue;
-    if (mappedValue > 0) {
-        startStrobeEffect(mappedValue);
-    } else {
-        stopStrobeEffect();
     }
 }
 
@@ -132,42 +120,45 @@ function setInitialValues() {
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
 
-    strobeIntensityInput.value = 0;
-    strobeIntensityValue.textContent = 0;
     stopStrobeEffect();
 }
 
 const resetControlsBtn = document.getElementById('reset-controls');
 
-strobeIntensityInput.addEventListener('input', (e) => {
-    const value = e.target.value;
-    strobeIntensityValue.textContent = value;
-    if (value > 0) {
-        startStrobeEffect(value);
-    } else {
-        stopStrobeEffect();
-    }
-});
+strobeButton.addEventListener('click', triggerStrobeEffect);
 
-function startStrobeEffect(intensity) {
-    if (strobeInterval) {
-        clearInterval(strobeInterval);
+function triggerStrobeEffect() {
+    if (strobeInterval || strobeTimeout) {
+        return; // Prevent multiple triggers
     }
-    setStrobeActive(true);  // Communicate to audioAnalyzer
-    const opacityValue = intensity / 100;
+    
+    setStrobeActive(true);
+    strobeButton.disabled = true;
+    
+    // Start the strobe effect
     strobeInterval = setInterval(() => {
-        strobeEffect.style.opacity = strobeEffect.style.opacity === '0' ? opacityValue : '0';
-    }, 50); // Adjust this value to change the strobe speed
+        strobeEffect.style.opacity = strobeEffect.style.opacity === '0' ? '1' : '0';
+    }, 50); // 20 flashes per second
+    
+    // Stop the effect after 2 seconds
+    strobeTimeout = setTimeout(() => {
+        stopStrobeEffect();
+        strobeButton.disabled = false;
+    }, 1500);
 }
 
 function stopStrobeEffect() {
     if (strobeInterval) {
         clearInterval(strobeInterval);
+        strobeInterval = null;
     }
-    setStrobeActive(false);  // Communicate to audioAnalyzer
+    if (strobeTimeout) {
+        clearTimeout(strobeTimeout);
+        strobeTimeout = null;
+    }
+    setStrobeActive(false);
     strobeEffect.style.opacity = '0';
 }
-
 
 resetControlsBtn.addEventListener('click', () => {
     setInitialValues();
