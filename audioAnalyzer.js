@@ -63,9 +63,17 @@ function analyzeBeat() {
     requestAnimationFrame(analyzeBeat);
 }
 
+let isStrobeActive = false;
+
+export function setStrobeActive(active) {
+    isStrobeActive = active;
+}
+
 function flashBackground(normalizedIntensity) {
-    const brightness = Math.floor(normalizedIntensity * 100);
-    document.body.style.backgroundColor = `hsl(${HUE}, ${SATURATION}%, ${brightness}%)`;
+    if (!isStrobeActive) {
+        const brightness = Math.floor(normalizedIntensity * 100);
+        document.body.style.backgroundColor = `hsl(${HUE}, ${SATURATION}%, ${brightness}%)`;
+    }
 }
 
 function resetBackground() {

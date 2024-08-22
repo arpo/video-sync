@@ -11,6 +11,7 @@ import {
     setHue,
     setSaturation,
     getBassRangeFrequencies,
+    setStrobeActive,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
 import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
@@ -33,10 +34,13 @@ const hardFlashThresholdInput = document.getElementById('hard-flash-threshold');
 const hardFlashThresholdValue = document.getElementById('hard-flash-threshold-value');
 const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
-// const saturationInput = document.getElementById('saturation');
 const saturationToggle = document.getElementById('saturation-toggle');
 const saturationValue = document.getElementById('saturation-value');
+const strobeIntensityInput = document.getElementById('strobe-intensity');
+const strobeIntensityValue = document.getElementById('strobe-intensity-value');
+const strobeEffect = document.getElementById('strobe-effect');
 
+let strobeInterval;
 
 function handleMIDIMessage(note, value) {
     switch (note) {
@@ -49,9 +53,20 @@ function handleMIDIMessage(note, value) {
         case 2:  // Third knob
             updateHue(value);
             break;
-        // case 1:  // Fourth knob
-        //     updateSaturation(value);
-        //     break;
+        case 1:  // Fourth knob
+            updateStrobeIntensity(value);
+            break;
+    }
+}
+
+function updateStrobeIntensity(value) {
+    const mappedValue = Math.round(mapMIDIValueToRange(value, 0, 100));
+    strobeIntensityInput.value = mappedValue;
+    strobeIntensityValue.textContent = mappedValue;
+    if (mappedValue > 0) {
+        startStrobeEffect(mappedValue);
+    } else {
+        stopStrobeEffect();
     }
 }
 
@@ -116,14 +131,47 @@ function setInitialValues() {
     saturationToggle.checked = INITIAL_VALUES.SATURATION === 100;
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
+
+    strobeIntensityInput.value = 0;
+    strobeIntensityValue.textContent = 0;
+    stopStrobeEffect();
 }
 
 const resetControlsBtn = document.getElementById('reset-controls');
 
+strobeIntensityInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    strobeIntensityValue.textContent = value;
+    if (value > 0) {
+        startStrobeEffect(value);
+    } else {
+        stopStrobeEffect();
+    }
+});
+
+function startStrobeEffect(intensity) {
+    if (strobeInterval) {
+        clearInterval(strobeInterval);
+    }
+    setStrobeActive(true);  // Communicate to audioAnalyzer
+    const opacityValue = intensity / 100;
+    strobeInterval = setInterval(() => {
+        strobeEffect.style.opacity = strobeEffect.style.opacity === '0' ? opacityValue : '0';
+    }, 50); // Adjust this value to change the strobe speed
+}
+
+function stopStrobeEffect() {
+    if (strobeInterval) {
+        clearInterval(strobeInterval);
+    }
+    setStrobeActive(false);  // Communicate to audioAnalyzer
+    strobeEffect.style.opacity = '0';
+}
 
 
 resetControlsBtn.addEventListener('click', () => {
     setInitialValues();
+    stopStrobeEffect();
 });
 
 saturationToggle.addEventListener('change', (e) => {

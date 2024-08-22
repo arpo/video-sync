@@ -267,3 +267,23 @@ button:hover {
 #saturation-toggle + label {
     cursor: pointer;
 }
+
+#strobe-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.strobe-control {
+    margin: 10px 0;
+}
+
+#strobe-intensity {
+    width: 100%;
+}
