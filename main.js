@@ -1,8 +1,17 @@
+import { initializeUI, updatePreviewWidths } from './uiController.js';
+import { addMedia, openAllVideos, togglePlay, masterAudio, videoWindows, setIsSeeking, getIsSeeking, setOnFileAddedCallback, getDroppedFiles } from './videoController.js';
+import { resetWithConfirmation } from './uiController.js';
 import { syncSlaveVideos } from './syncController.js';
-import { initializeUI, resetWithConfirmation, updatePreviewWidths } from './uiController.js';
-import { addMedia, getDroppedFiles, masterAudio, openAllVideos, setIsSeeking, setOnFileAddedCallback, togglePlay, videoWindows } from './videoController.js';
+import { 
+    setIntensityThreshold, 
+    setBassRangeStart, 
+    setBassRangeEnd, 
+    setHardFlashThreshold, 
+    setHue,
+    getBassRangeFrequencies,
+    INITIAL_VALUES
+} from './audioAnalyzer.js';
 
-console.log("Script is running");
 
 const dropZone = document.getElementById('drop-zone');
 const openAllBtn = document.getElementById('open-all');
@@ -10,6 +19,72 @@ const togglePlayBtn = document.getElementById('toggle-play');
 const resetBtn = document.getElementById('reset');
 const progressBar = document.getElementById('progress-bar');
 const droppedFilesList = document.getElementById('dropped-files-list');
+
+const intensityThresholdInput = document.getElementById('intensity-threshold');
+const intensityThresholdValue = document.getElementById('intensity-threshold-value');
+const bassRangeStartInput = document.getElementById('bass-range-start');
+const bassRangeStartValue = document.getElementById('bass-range-start-value');
+const bassRangeEndInput = document.getElementById('bass-range-end');
+const bassRangeEndValue = document.getElementById('bass-range-end-value');
+const hardFlashThresholdInput = document.getElementById('hard-flash-threshold');
+const hardFlashThresholdValue = document.getElementById('hard-flash-threshold-value');
+const hueInput = document.getElementById('hue');
+const hueValue = document.getElementById('hue-value');
+
+function updateFrequencyDisplay() {
+    const { start, end } = getBassRangeFrequencies();
+    bassRangeStartValue.textContent = start.toFixed(2);
+    bassRangeEndValue.textContent = end.toFixed(2);
+}
+
+function setInitialValues() {
+    intensityThresholdInput.value = INITIAL_VALUES.INTENSITY_THRESHOLD;
+    intensityThresholdValue.textContent = INITIAL_VALUES.INTENSITY_THRESHOLD;
+    
+    bassRangeStartInput.value = INITIAL_VALUES.BASS_RANGE_START;
+    bassRangeEndInput.value = INITIAL_VALUES.BASS_RANGE_END;
+    updateFrequencyDisplay();
+    
+    hardFlashThresholdInput.value = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
+    hardFlashThresholdValue.textContent = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
+    
+    hueInput.value = INITIAL_VALUES.HUE;
+    hueValue.textContent = INITIAL_VALUES.HUE;
+}
+
+intensityThresholdInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setIntensityThreshold(Number(value));
+    intensityThresholdValue.textContent = value;
+});
+
+bassRangeStartInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setBassRangeStart(Number(value));
+    updateFrequencyDisplay();
+});
+
+bassRangeEndInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setBassRangeEnd(Number(value));
+    updateFrequencyDisplay();
+});
+
+hardFlashThresholdInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setHardFlashThreshold(Number(value));
+    hardFlashThresholdValue.textContent = value;
+});
+
+hueInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setHue(Number(value));
+    hueValue.textContent = value;
+});
+
+// Set initial values and update frequency display
+setInitialValues();
+updateFrequencyDisplay();
 
 function updateFileList() {
     const files = getDroppedFiles();

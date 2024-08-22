@@ -1,6 +1,7 @@
 import { updateToggleButton, updateTotalTime, updateTimeDisplay, resetTimeDisplay } from './uiController.js';
 import { syncSlaveVideos, syncPlayState } from './syncController.js';
 import { checkVideoLengths } from './utils.js';
+import { setupAudioAnalyzer, stopAnalyzing } from './audioAnalyzer.js';
 
 let droppedFiles = [];
 let videoWindows = [];
@@ -42,6 +43,7 @@ function setupAudioMaster(file) {
     masterAudio.addEventListener('loadedmetadata', () => {
         updateTotalTime(masterAudio.duration);
         document.getElementById('progress-bar').max = Math.floor(masterAudio.duration);
+        setupAudioAnalyzer(masterAudio);
     });
 
     masterAudio.addEventListener('timeupdate', () => {
@@ -203,6 +205,7 @@ export function resetVideoState() {
         masterAudio.pause();
         masterAudio.remove();
         masterAudio = null;
+        stopAnalyzing();
     }
     masterVideo = null;
     isPlaying = false;

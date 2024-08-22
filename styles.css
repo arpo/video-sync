@@ -8,10 +8,27 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #1a1a1a;
+    background-color: #000000;
     color: #ffffff;
     max-width: 100%;
     box-sizing: border-box;
+    transition: background-color 0.1s ease;
+}
+
+.control-panel {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    width: 100%;
+}
+.control-panel label {
+    display: block;
+    margin-top: 10px;
+}
+
+.control-panel input {
+    width: 100%;
 }
 
 #drop-zone {
@@ -22,7 +39,7 @@ body {
     text-align: center;
     padding: 20px;
     margin: 20px 0;
-    background-color: #2a2a2a;
+    /* background-color: #161616; */
     box-sizing: border-box;
 }
 
@@ -39,7 +56,7 @@ body {
     flex: 1 1 calc(var(--preview-width) - 10px);
     max-width: calc(var(--preview-width) - 10px);
     aspect-ratio: 16 / 9;
-    background-color: #2a2a2a;
+    background-color: #161616;
     border-radius: 5px;
     overflow: hidden;
 }
@@ -54,7 +71,7 @@ body {
     font-size: 1em;
     margin: 10px 0;
     padding: 5px 10px;
-    background-color: #2a2a2a;
+    background-color: #161616;
     border-radius: 5px;
     text-align: center;
     width: 100%;

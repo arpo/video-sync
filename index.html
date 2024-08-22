@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio-Video Sync Service</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            transition: background-color 0.1s ease;
+        }
+        .control-panel {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        .control-panel label {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div id="drop-zone">
@@ -24,6 +39,22 @@
         <button id="open-all">Open All Videos</button>
         <button id="toggle-play">Play</button>
         <button id="reset">Reset</button>
+    </div>
+    <div class="control-panel">
+        <label for="intensity-threshold">Intensity Threshold: <span id="intensity-threshold-value">190</span></label>
+        <input type="range" id="intensity-threshold" min="0" max="255" value="190">
+        
+        <label for="bass-range-start">Bass Range Start: <span id="bass-range-start-value">200</span> Hz</label>
+        <input type="range" id="bass-range-start" min="20" max="1000" value="200">
+        
+        <label for="bass-range-end">Bass Range End: <span id="bass-range-end-value">280</span> Hz</label>
+        <input type="range" id="bass-range-end" min="21" max="1000" value="280">
+        
+        <label for="hard-flash-threshold">Hard Flash Threshold: <span id="hard-flash-threshold-value">0.5</span></label>
+        <input type="range" id="hard-flash-threshold" min="0" max="1" step="0.01" value="0.5">
+        
+        <label for="hue">Hue: <span id="hue-value">200</span></label>
+        <input type="range" id="hue" min="0" max="360" value="200">
     </div>
     <script type="module" src="main.js"></script>
 </body>
