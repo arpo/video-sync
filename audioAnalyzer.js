@@ -69,7 +69,7 @@ function flashBackground(normalizedIntensity) {
 }
 
 function resetBackground() {
-    document.body.style.backgroundColor = '#000000';
+    document.body.style.backgroundColor = '#070707';
 }
 
 export function stopAnalyzing() {

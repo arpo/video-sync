@@ -13,6 +13,7 @@ import {
     getBassRangeFrequencies,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
+import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
 
 
 const dropZone = document.getElementById('drop-zone');
@@ -34,6 +35,55 @@ const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
 const saturationInput = document.getElementById('saturation');
 const saturationValue = document.getElementById('saturation-value');
+
+function handleMIDIMessage(note, value) {
+    switch (note) {
+        case 13:  // First knob
+            updateIntensityThreshold(value);
+            break;
+        case 3:  // Second knob
+            updateHardFlashThreshold(value);
+            break;
+        case 2:  // Third knob
+            updateHue(value);
+            break;
+        case 1:  // Fourth knob
+            updateSaturation(value);
+            break;
+    }
+}
+
+function updateIntensityThreshold(value) {
+    const mappedValue = mapMIDIValueToRange(value, 170, 255);
+    setIntensityThreshold(mappedValue);
+    intensityThresholdInput.value = mappedValue;
+    intensityThresholdValue.textContent = Math.round(mappedValue);
+}
+
+function updateHardFlashThreshold(value) {
+    const mappedValue = mapMIDIValueToRange(value, 0, 1);
+    setHardFlashThreshold(mappedValue);
+    hardFlashThresholdInput.value = mappedValue;
+    hardFlashThresholdValue.textContent = mappedValue.toFixed(2);
+}
+
+function updateHue(value) {
+    const mappedValue = mapMIDIValueToRange(value, 0, 360);
+    setHue(mappedValue);
+    hueInput.value = mappedValue;
+    hueValue.textContent = Math.round(mappedValue);
+}
+
+function updateSaturation(value) {
+    const mappedValue = mapMIDIValueToRange(value, 0, 100);
+    setSaturation(mappedValue);
+    saturationInput.value = mappedValue;
+    saturationValue.textContent = Math.round(mappedValue);
+}
+
+// Initialize MIDI and set up the callback
+initializeMIDI();
+setMIDIMessageCallback(handleMIDIMessage);
 
 function updateFrequencyDisplay() {
     const { start, end } = getBassRangeFrequencies();
