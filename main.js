@@ -150,6 +150,8 @@ progressBar.addEventListener('change', () => {
     setIsSeeking(false);
 });
 
+window.addEventListener('resize', updatePreviewWidths);
+
 initializeUI();
 updateFileList();
 

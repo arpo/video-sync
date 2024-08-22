@@ -20,16 +20,20 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 20px;
+    width: 100%;
 }
+
 .video-preview {
-    width: 160px;
-    height: 90px;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 160px; /* Minimum width for each preview */
     background-color: #333;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
 }
+
 .video-preview video {
     width: 100%;
     height: 100%;

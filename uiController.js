@@ -15,12 +15,35 @@ export function initializeUI() {
 
 export function updatePreviewWidths() {
     const videoCount = document.querySelectorAll('.video-preview').length;
-    let width;
-    if (videoCount === 1) width = '100%';
-    else if (videoCount === 2) width = '50%';
-    else if (videoCount === 3) width = '33.33%';
-    else width = '25%';
-    document.documentElement.style.setProperty('--preview-width', width);
+    const previews = document.querySelectorAll('.video-preview');
+    const previewsContainer = document.getElementById('video-previews');
+    
+    if (videoCount > 0) {
+        const containerWidth = previewsContainer.offsetWidth;
+        const gapSize = 10; // This should match the gap size in CSS
+        const totalGapWidth = gapSize * (videoCount - 1);
+        const availableWidth = containerWidth - totalGapWidth;
+        const baseWidth = Math.floor(availableWidth / videoCount);
+
+        previews.forEach((preview, index) => {
+            let previewWidth;
+            if (index === videoCount - 1) {
+                // Last preview takes remaining width to account for potential rounding issues
+                previewWidth = availableWidth - (baseWidth * (videoCount - 1));
+            } else {
+                previewWidth = baseWidth;
+            }
+            
+            // Calculate height based on 16:9 aspect ratio
+            const previewHeight = Math.floor(previewWidth * (9/16));
+            
+            preview.style.width = `${previewWidth}px`;
+            preview.style.height = `${previewHeight}px`;
+        });
+
+        // Set the container height to match the preview height
+        previewsContainer.style.height = `${previews[0].offsetHeight}px`;
+    }
 }
 
 export function updateToggleButton(isPlaying) {
