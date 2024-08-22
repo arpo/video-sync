@@ -1,9 +1,3 @@
-import { 
-    setIntensityThreshold, 
-    setHardFlashThreshold, 
-    setHue,
-    setSaturation
-} from './audioAnalyzer.js';
 
 let midiAccess = null;
 let onMIDIMessageCallback = null;

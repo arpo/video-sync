@@ -49,9 +49,15 @@ function createVideoPreview(file) {
     updatePreviewWidths();
 }
 
-export function syncPreviewVideos(currentTime, isPlaying) {
+export function syncPreviewVideos() {
+    const masterMedia = masterAudio || masterVideo;
+    if (!masterMedia) return;
+
+    const currentTime = masterMedia.currentTime;
+    const isPlaying = !masterMedia.paused;
+
     previewVideos.forEach(video => {
-        if (Math.abs(video.currentTime - currentTime) > 0.5) {
+        if (Math.abs(video.currentTime - currentTime) > 0.1) {
             video.currentTime = currentTime;
         }
         if (isPlaying && video.paused) {
@@ -77,6 +83,7 @@ function setupAudioMaster(file) {
     masterAudio.addEventListener('timeupdate', () => {
         if (!isSeeking && masterAudio) {
             syncSlaveVideos();
+            syncPreviewVideos(); // Add this line
             updateTimeDisplay(masterAudio.currentTime, masterAudio.duration);
         }
     });
@@ -85,12 +92,14 @@ function setupAudioMaster(file) {
         isPlaying = true;
         updateToggleButton(true);
         syncPlayState(true);
+        syncPreviewVideos(); // Add this line
     });
 
     masterAudio.addEventListener('pause', () => {
         isPlaying = false;
         updateToggleButton(false);
         syncPlayState(false);
+        syncPreviewVideos(); // Add this line
     });
 }
 
@@ -245,6 +254,9 @@ export function resetVideoState() {
 
 export function setIsSeeking(value) {
     isSeeking = value;
+    if (!value) {
+        syncPreviewVideos(); // Add this line
+    }
 }
 
 export function getIsSeeking() {
