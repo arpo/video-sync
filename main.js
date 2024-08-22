@@ -4,11 +4,12 @@ import { resetWithConfirmation } from './uiController.js';
 import { syncSlaveVideos } from './syncController.js';
 import { 
     setIntensityThreshold, 
+    setIntensityThresholdMin,  // Add this line
     setBassRangeStart, 
     setBassRangeEnd, 
     setHardFlashThreshold, 
     setHue,
-    setSaturation,  // Add this line
+    setSaturation,
     getBassRangeFrequencies,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
@@ -42,7 +43,9 @@ function updateFrequencyDisplay() {
 
 function setInitialValues() {
     intensityThresholdInput.value = INITIAL_VALUES.INTENSITY_THRESHOLD;
+    intensityThresholdInput.min = INITIAL_VALUES.INTENSITY_THRESHOLD_MIN;  // Add this line
     intensityThresholdValue.textContent = INITIAL_VALUES.INTENSITY_THRESHOLD;
+    
     
     bassRangeStartInput.value = INITIAL_VALUES.BASS_RANGE_START;
     bassRangeEndInput.value = INITIAL_VALUES.BASS_RANGE_END;
@@ -57,6 +60,14 @@ function setInitialValues() {
     saturationInput.value = INITIAL_VALUES.SATURATION;
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
 }
+
+
+intensityThresholdInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setIntensityThreshold(Number(value));
+    setIntensityThresholdMin(Number(intensityThresholdInput.min));  // Add this line
+    intensityThresholdValue.textContent = value;
+});
 
 intensityThresholdInput.addEventListener('input', (e) => {
     const value = e.target.value;

@@ -5,6 +5,7 @@ let isAnalyzing = false;
 
 export const INITIAL_VALUES = {
     INTENSITY_THRESHOLD: 190,
+    INTENSITY_THRESHOLD_MIN: 170,  // Add this line
     BASS_RANGE_START: 200,
     BASS_RANGE_END: 280,
     HARD_FLASH_THRESHOLD: 0.5,
@@ -13,6 +14,7 @@ export const INITIAL_VALUES = {
 };
 
 let INTENSITY_THRESHOLD = INITIAL_VALUES.INTENSITY_THRESHOLD;
+let INTENSITY_THRESHOLD_MIN = INITIAL_VALUES.INTENSITY_THRESHOLD_MIN; 
 let BASS_RANGE_START = INITIAL_VALUES.BASS_RANGE_START;
 let BASS_RANGE_END = INITIAL_VALUES.BASS_RANGE_END;
 let HARD_FLASH_THRESHOLD = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
@@ -45,7 +47,9 @@ function analyzeBeat() {
     const bassAverage = bassSum / (endIndex - startIndex);
 
     if (bassAverage > INTENSITY_THRESHOLD) {
-        let normalizedIntensity = (bassAverage - INTENSITY_THRESHOLD) / (255 - INTENSITY_THRESHOLD);
+        // Adjust the normalization to account for the new minimum threshold
+        let normalizedIntensity = (bassAverage - INTENSITY_THRESHOLD_MIN) / (255 - INTENSITY_THRESHOLD_MIN);
+        normalizedIntensity = Math.min(Math.max(normalizedIntensity, 0), 1); // Ensure it's between 0 and 1
         
         if (normalizedIntensity > HARD_FLASH_THRESHOLD) {
             normalizedIntensity = 1;
@@ -78,6 +82,10 @@ export function stopAnalyzing() {
 
 export function setIntensityThreshold(value) {
     INTENSITY_THRESHOLD = value;
+}
+
+export function setIntensityThresholdMin(value) {  // Add this function
+    INTENSITY_THRESHOLD_MIN = value;
 }
 
 export function setBassRangeStart(value) {
