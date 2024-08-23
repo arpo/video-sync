@@ -12,10 +12,20 @@ import {
     setSaturation,
     getBassRangeFrequencies,
     setStrobeActive,
+    setFlashEffectsEnabled,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
 import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
 
+const config = {
+    STROBE_DURATION: 1200
+};
+
+let scrollAnimationId;
+let currentScrollSpeed = 0;
+const MAX_SCROLL_SPEED = 10; // maximum pixels per frame
+const SCROLL_ACCELERATION = 0.2; // how quickly to reach max speed
+const SCROLL_DECELERATION = 0.1; // how quickly to stop
 
 const dropZone = document.getElementById('drop-zone');
 const openAllBtn = document.getElementById('open-all');
@@ -34,7 +44,7 @@ const hardFlashThresholdInput = document.getElementById('hard-flash-threshold');
 const hardFlashThresholdValue = document.getElementById('hard-flash-threshold-value');
 const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
-const saturationToggle = document.getElementById('saturation-toggle');
+const saturationInput = document.getElementById('saturation');
 const saturationValue = document.getElementById('saturation-value');
 
 const strobeButton = document.getElementById('strobe-button');
@@ -43,8 +53,18 @@ let strobeTimeout;
 let strobeInterval;
 let strobeEndTime;
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+
 function handleMIDIMessage(note, value) {
-    console.log(note, value);
+    // console.log(note, value);
     switch (note) {
         case 114:  // First Slider
             updateIntensityThreshold(value);
@@ -56,6 +76,7 @@ function handleMIDIMessage(note, value) {
             updateHue(value);
             break;
         case 16:  // Fourth Slider
+            updateSaturation(value);
             break;
         case 17:  // Fifth Slider
             break;
@@ -64,8 +85,10 @@ function handleMIDIMessage(note, value) {
         case 79:  // Seventh Slider
             break;
         case 72:  // Eighth Slider
+            handleScrollSlider(value);
             break;
         case 44:  // button 1x1
+            triggerStrobeEffect();
             break;
         case 45:  // button 1x2
             break;
@@ -85,6 +108,58 @@ function handleMIDIMessage(note, value) {
 
     }
 }
+
+function handleScrollSlider(value) {
+    // Map MIDI value to desired scroll speed
+    const targetScrollSpeed = mapMIDIValueToRange(value, -MAX_SCROLL_SPEED, MAX_SCROLL_SPEED);
+    
+    // Start the smooth scrolling animation if it's not already running
+    if (!scrollAnimationId) {
+        smoothScroll();
+    }
+    
+    // Update the current scroll speed (this will be used in the smoothScroll function)
+    currentScrollSpeed = targetScrollSpeed;
+}
+
+function smoothScroll() {
+    // Calculate the new scroll position
+    if (Math.abs(currentScrollSpeed) > 0.1) {
+        window.scrollBy(0, currentScrollSpeed);
+    } else {
+        currentScrollSpeed = 0; // Stop scrolling if speed is very low
+    }
+
+    // Continue the animation
+    scrollAnimationId = requestAnimationFrame(smoothScroll);
+}
+
+// Add an event listener to stop scrolling when the user interacts with the page
+window.addEventListener('wheel', stopScrolling);
+window.addEventListener('touchstart', stopScrolling);
+
+function stopScrolling() {
+    if (scrollAnimationId) {
+        cancelAnimationFrame(scrollAnimationId);
+        scrollAnimationId = null;
+    }
+    currentScrollSpeed = 0;
+}
+
+const flashEffectsToggle = document.getElementById('flash-effects-toggle');
+const toggleLabel = flashEffectsToggle.nextElementSibling;
+
+flashEffectsToggle.addEventListener('change', (e) => {
+    const isEnabled = e.target.checked;
+    setFlashEffectsEnabled(isEnabled);
+    toggleLabel.textContent = isEnabled ? 'ON' : 'OFF';
+    
+    // Optionally disable related controls when flash effects are off
+    intensityThresholdInput.disabled = !isEnabled;
+    hardFlashThresholdInput.disabled = !isEnabled;
+    hueInput.disabled = !isEnabled;
+    saturationInput.disabled = !isEnabled;
+});
 
 function updateIntensityThreshold(value) {
     const mappedValue = mapMIDIValueToRange(value, 170, 255);
@@ -108,9 +183,9 @@ function updateHue(value) {
 }
 
 function updateSaturation(value) {
-    const mappedValue = value > 63 ? 100 : 0;  // Threshold at midpoint of MIDI range
+    const mappedValue = Math.round(mapMIDIValueToRange(value, 0, 100));
     setSaturation(mappedValue);
-    saturationToggle.checked = mappedValue === 100;
+    saturationInput.value = mappedValue;
     saturationValue.textContent = mappedValue;
 }
 
@@ -141,7 +216,7 @@ function setInitialValues() {
     setHardFlashThreshold(INITIAL_VALUES.HARD_FLASH_THRESHOLD);
     setHue(INITIAL_VALUES.HUE);
     
-    saturationToggle.checked = INITIAL_VALUES.SATURATION === 100;
+    saturationInput.value = INITIAL_VALUES.SATURATION;
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
 
@@ -157,13 +232,13 @@ function triggerStrobeEffect() {
     
     if (strobeInterval) {
         // If strobe is active, extend the duration
-        strobeEndTime = currentTime + 1500; // Extend by 1.5 seconds from now
+        strobeEndTime = currentTime + config.STROBE_DURATION; // Extend by 1.5 seconds from now
         clearTimeout(strobeTimeout);
         setStrobeTimeout();
     } else {
         // Start a new strobe effect
         setStrobeActive(true);
-        strobeEndTime = currentTime + 1500;
+        strobeEndTime = currentTime + config.STROBE_DURATION;
         
         // Start the strobe effect
         strobeInterval = setInterval(() => {
@@ -198,12 +273,6 @@ resetControlsBtn.addEventListener('click', () => {
     setInitialValues();
     stopStrobeEffect();
 });
-
-saturationToggle.addEventListener('change', (e) => {
-    const value = e.target.checked ? 100 : 0;
-    setSaturation(value);
-    saturationValue.textContent = value;
-})
 
 intensityThresholdInput.addEventListener('input', (e) => {
     const value = e.target.value;
@@ -242,11 +311,11 @@ hueInput.addEventListener('input', (e) => {
     hueValue.textContent = value;
 });
 
-// saturationInput.addEventListener('input', (e) => {
-//     const value = e.target.value;
-//     setSaturation(Number(value));
-//     saturationValue.textContent = value;
-// });
+saturationInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setSaturation(Number(value));
+    saturationValue.textContent = value;
+});
 
 // Set initial values and update frequency display
 setInitialValues();

@@ -21,6 +21,16 @@ let HARD_FLASH_THRESHOLD = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
 let HUE = INITIAL_VALUES.HUE;
 let SATURATION = INITIAL_VALUES.SATURATION;
 
+let isFlashEffectsEnabled = true;
+
+export function setFlashEffectsEnabled(enabled) {
+    isFlashEffectsEnabled = enabled;
+    if (!enabled) {
+        // Reset background when disabled
+        document.body.style.backgroundColor = '#000000';
+    }
+}
+
 export function setupAudioAnalyzer(audioElement) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
@@ -70,11 +80,13 @@ export function setStrobeActive(active) {
 }
 
 function flashBackground(normalizedIntensity) {
-    if (!isStrobeActive) {
+    if (isFlashEffectsEnabled) {
+        // Existing flash effect code
         const brightness = Math.floor(normalizedIntensity * 100);
         document.body.style.backgroundColor = `hsl(${HUE}, ${SATURATION}%, ${brightness}%)`;
     }
 }
+
 
 function resetBackground() {
     document.body.style.backgroundColor = '#070707';

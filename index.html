@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Video Sync">
+    <meta name="apple-mobile-web-app-title" content="Video Sync">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="msapplication-navbutton-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-starturl" content="/index.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+    <link rel="icon" sizes="512x512" href="icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512x512.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&amp;display=swap" rel="stylesheet">
-    <title>Audio-Video Sync Service</title>
+    <title>SyncWave</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="/manifest.json">
     <style>
         body {
             transition: background-color 0.1s ease;
@@ -42,6 +57,13 @@
         <button id="initBtn">Stop/Close All</button>
     </div>
     <div class="control-panel">
+
+        <div class="flash-toggle">
+            <label for="flash-effects-toggle">Flash Effects:</label>
+            <input type="checkbox" id="flash-effects-toggle" checked>
+            <span class="toggle-label">ON</span>
+        </div>
+
         <label for="intensity-threshold">Intensity Threshold: <span id="intensity-threshold-value">190</span></label>
         <input type="range" id="intensity-threshold" min="170" max="255" value="190">
         
@@ -51,10 +73,8 @@
         <label for="hue">Hue: <span id="hue-value">200</span></label>
         <input type="range" id="hue" min="0" max="360" value="200">
 
-        <div class="saturation-control">
-            <input type="checkbox" id="saturation-toggle" checked>
-            <label for="saturation-toggle">Saturation: <span id="saturation-value">100</span>%</label>
-        </div>
+        Saturation: <span id="saturation-value">100</span>%
+        <input type="range" id="saturation" min="0" max="100" value="100">
 
         <div class="strobe-control">
             <button id="strobe-button">Trigger Strobe</button>

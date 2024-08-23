@@ -269,3 +269,48 @@ button:hover {
 .strobe-control {
     margin: 10px 0;
 }
+
+.flash-toggle {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.flash-toggle label {
+    margin-right: 10px;
+}
+
+.flash-toggle input[type="checkbox"] {
+    appearance: none;
+    width: 50px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.flash-toggle input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+}
+
+.flash-toggle input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    transition: transform 0.3s;
+}
+
+.flash-toggle input[type="checkbox"]:checked::before {
+    transform: translateX(26px);
+}
+
+.toggle-label {
+    margin-left: 10px;
+}
