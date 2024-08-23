@@ -1,6 +1,8 @@
 let audioContext;
 let analyser;
 let dataArray;
+let lowPassFilter;
+let highPassFilter;
 let isAnalyzing = false;
 
 export const INITIAL_VALUES = {
@@ -10,7 +12,9 @@ export const INITIAL_VALUES = {
     BASS_RANGE_END: 280,
     HARD_FLASH_THRESHOLD: 0.5,
     HUE: 200,
-    SATURATION: 100
+    SATURATION: 100,
+    LOW_PASS_FREQUENCY: 22050,  // Default to Nyquist frequency (half of standard sample rate)
+    HIGH_PASS_FREQUENCY: 0
 };
 
 let INTENSITY_THRESHOLD = INITIAL_VALUES.INTENSITY_THRESHOLD;
@@ -20,6 +24,8 @@ let BASS_RANGE_END = INITIAL_VALUES.BASS_RANGE_END;
 let HARD_FLASH_THRESHOLD = INITIAL_VALUES.HARD_FLASH_THRESHOLD;
 let HUE = INITIAL_VALUES.HUE;
 let SATURATION = INITIAL_VALUES.SATURATION;
+let LOW_PASS_FREQUENCY = INITIAL_VALUES.LOW_PASS_FREQUENCY;
+let HIGH_PASS_FREQUENCY = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
 
 let isFlashEffectsEnabled = true;
 
@@ -35,8 +41,22 @@ export function setupAudioAnalyzer(audioElement) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
     const source = audioContext.createMediaElementSource(audioElement);
-    source.connect(analyser);
+
+    // Create filters
+    lowPassFilter = audioContext.createBiquadFilter();
+    lowPassFilter.type = 'lowpass';
+    lowPassFilter.frequency.value = LOW_PASS_FREQUENCY;
+
+    highPassFilter = audioContext.createBiquadFilter();
+    highPassFilter.type = 'highpass';
+    highPassFilter.frequency.value = HIGH_PASS_FREQUENCY;
+
+    // Connect nodes: source -> highPassFilter -> lowPassFilter -> analyser -> destination
+    source.connect(highPassFilter);
+    highPassFilter.connect(lowPassFilter);
+    lowPassFilter.connect(analyser);
     analyser.connect(audioContext.destination);
+
 
     analyser.fftSize = 2048;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -71,6 +91,20 @@ function analyzeBeat() {
     }
 
     requestAnimationFrame(analyzeBeat);
+}
+
+export function setLowPassFrequency(value) {
+    LOW_PASS_FREQUENCY = value;
+    if (lowPassFilter) {
+        lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+    }
+}
+
+export function setHighPassFrequency(value) {
+    HIGH_PASS_FREQUENCY = value;
+    if (highPassFilter) {
+        highPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+    }
 }
 
 let isStrobeActive = false;

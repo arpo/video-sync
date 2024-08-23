@@ -13,6 +13,8 @@ import {
     getBassRangeFrequencies,
     setStrobeActive,
     setFlashEffectsEnabled,
+    setLowPassFrequency,
+    setHighPassFrequency,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
 import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
@@ -46,7 +48,10 @@ const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
 const saturationInput = document.getElementById('saturation');
 const saturationValue = document.getElementById('saturation-value');
-
+const lowPassInput = document.getElementById('low-pass-filter');
+const lowPassValue = document.getElementById('low-pass-value');
+const highPassInput = document.getElementById('high-pass-filter');
+const highPassValue = document.getElementById('high-pass-value');
 const strobeButton = document.getElementById('strobe-button');
 const strobeEffect = document.getElementById('strobe-effect');
 let strobeTimeout;
@@ -81,8 +86,10 @@ function handleMIDIMessage(note, value) {
         case 17:  // Fifth Slider
             break;
         case 91:  // Sixth Slider
+            updateLowPassFilter(value);
             break;
         case 79:  // Seventh Slider
+            updateHighPassFilter(value);
             break;
         case 72:  // Eighth Slider
             handleScrollSlider(value);
@@ -107,6 +114,20 @@ function handleMIDIMessage(note, value) {
 
 
     }
+}
+
+function updateLowPassFilter(value) {
+    const mappedValue = mapMIDIValueToRange(value, 20, 22050); // Human hearing range
+    setLowPassFrequency(mappedValue);
+    lowPassInput.value = mappedValue;
+    lowPassValue.textContent = Math.round(mappedValue);
+}
+
+function updateHighPassFilter(value) {
+    const mappedValue = mapMIDIValueToRange(value, 20, 22050); // Human hearing range
+    setHighPassFrequency(mappedValue);
+    highPassInput.value = mappedValue;
+    highPassValue.textContent = Math.round(mappedValue);
 }
 
 function handleScrollSlider(value) {
@@ -220,8 +241,28 @@ function setInitialValues() {
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
 
+    lowPassInput.value = INITIAL_VALUES.LOW_PASS_FREQUENCY;
+    lowPassValue.textContent = INITIAL_VALUES.LOW_PASS_FREQUENCY;
+    setLowPassFrequency(INITIAL_VALUES.LOW_PASS_FREQUENCY);
+
+    highPassInput.value = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
+    highPassValue.textContent = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
+    setHighPassFrequency(INITIAL_VALUES.HIGH_PASS_FREQUENCY);
+
     stopStrobeEffect();
 }
+
+lowPassInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setLowPassFrequency(Number(value));
+    lowPassValue.textContent = value;
+});
+
+highPassInput.addEventListener('input', (e) => {
+    const value = e.target.value;
+    setHighPassFrequency(Number(value));
+    highPassValue.textContent = value;
+});
 
 const resetControlsBtn = document.getElementById('reset-controls');
 
