@@ -314,3 +314,19 @@ button:hover {
 .toggle-label {
     margin-left: 10px;
 }
+
+.filter-control {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.left-label, .right-label {
+    font-size: 0.8em;
+    color: #888;
+}

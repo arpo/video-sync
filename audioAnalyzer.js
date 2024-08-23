@@ -94,16 +94,24 @@ function analyzeBeat() {
 }
 
 export function setLowPassFrequency(value) {
-    LOW_PASS_FREQUENCY = value;
-    if (lowPassFilter) {
-        lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+    if (isFinite(value) && value >= 0) {
+        LOW_PASS_FREQUENCY = value;
+        if (lowPassFilter && audioContext) {
+            lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+        }
+    } else {
+        console.warn(`Invalid low-pass frequency value: ${value}`);
     }
 }
 
 export function setHighPassFrequency(value) {
-    HIGH_PASS_FREQUENCY = value;
-    if (highPassFilter) {
-        highPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+    if (isFinite(value) && value >= 0) {
+        HIGH_PASS_FREQUENCY = value;
+        if (highPassFilter && audioContext) {
+            highPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+        }
+    } else {
+        console.warn(`Invalid high-pass frequency value: ${value}`);
     }
 }
 

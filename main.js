@@ -25,9 +25,9 @@ const config = {
 
 let scrollAnimationId;
 let currentScrollSpeed = 0;
-const MAX_SCROLL_SPEED = 10; // maximum pixels per frame
-const SCROLL_ACCELERATION = 0.2; // how quickly to reach max speed
-const SCROLL_DECELERATION = 0.1; // how quickly to stop
+const MAX_SCROLL_SPEED = 40; // maximum pixels per frame
+const MIN_FREQ = 20;
+const MAX_FREQ = 22050;
 
 const dropZone = document.getElementById('drop-zone');
 const openAllBtn = document.getElementById('open-all');
@@ -68,6 +68,7 @@ if ('serviceWorker' in navigator) {
     });
   }
 
+// MIDI mapping mad for Worlde Orca PAD48
 function handleMIDIMessage(note, value) {
     // console.log(note, value);
     switch (note) {
@@ -111,22 +112,57 @@ function handleMIDIMessage(note, value) {
             break;
         case 79:  // button 1x8
             break;
-
-
     }
 }
 
+function logSliderToFreq(position) {
+    // Ensure position is within valid range
+    position = Math.max(0, Math.min(100, position));
+
+    // Invert the position
+    position = 100 - position;
+
+    const minP = 0;
+    const maxP = 100;
+
+    // The result should be between MIN_FREQ and MAX_FREQ
+    const minV = Math.log(MIN_FREQ);
+    const maxV = Math.log(MAX_FREQ);
+
+    // Calculate adjustment factor
+    const scale = (maxV - minV) / (maxP - minP);
+
+    return Math.exp(minV + scale * (position - minP));
+}
+
+function freqToLogSlider(freq) {
+    // Ensure freq is within valid range
+    freq = Math.max(MIN_FREQ, Math.min(MAX_FREQ, freq));
+
+    const minP = 0;
+    const maxP = 100;
+    const minV = Math.log(MIN_FREQ);
+    const maxV = Math.log(MAX_FREQ);
+
+    // Calculate adjustment factor
+    const scale = (maxV - minV) / (maxP - minP);
+
+    // Invert the result
+    return 100 - ((Math.log(freq) - minV) / scale + minP);
+}
+
+
 function updateLowPassFilter(value) {
-    const mappedValue = mapMIDIValueToRange(value, 20, 22050); // Human hearing range
+    const mappedValue = logSliderToFreq(mapMIDIValueToRange(value, 0, 100));
     setLowPassFrequency(mappedValue);
-    lowPassInput.value = mappedValue;
+    lowPassInput.value = freqToLogSlider(mappedValue);
     lowPassValue.textContent = Math.round(mappedValue);
 }
 
 function updateHighPassFilter(value) {
-    const mappedValue = mapMIDIValueToRange(value, 20, 22050); // Human hearing range
+    const mappedValue = logSliderToFreq(mapMIDIValueToRange(value, 0, 100));
     setHighPassFrequency(mappedValue);
-    highPassInput.value = mappedValue;
+    highPassInput.value = freqToLogSlider(mappedValue);
     highPassValue.textContent = Math.round(mappedValue);
 }
 
@@ -241,27 +277,35 @@ function setInitialValues() {
     saturationValue.textContent = INITIAL_VALUES.SATURATION;
     setSaturation(INITIAL_VALUES.SATURATION);
 
-    lowPassInput.value = INITIAL_VALUES.LOW_PASS_FREQUENCY;
-    lowPassValue.textContent = INITIAL_VALUES.LOW_PASS_FREQUENCY;
+    const initialLowPassSliderValue = freqToLogSlider(INITIAL_VALUES.LOW_PASS_FREQUENCY);
+    lowPassInput.value = initialLowPassSliderValue;
+    lowPassValue.textContent = Math.round(INITIAL_VALUES.LOW_PASS_FREQUENCY);
     setLowPassFrequency(INITIAL_VALUES.LOW_PASS_FREQUENCY);
 
-    highPassInput.value = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
-    highPassValue.textContent = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
+    const initialHighPassSliderValue = freqToLogSlider(INITIAL_VALUES.HIGH_PASS_FREQUENCY);
+    highPassInput.value = initialHighPassSliderValue;
+    highPassValue.textContent = Math.round(INITIAL_VALUES.HIGH_PASS_FREQUENCY);
     setHighPassFrequency(INITIAL_VALUES.HIGH_PASS_FREQUENCY);
 
     stopStrobeEffect();
 }
 
 lowPassInput.addEventListener('input', (e) => {
-    const value = e.target.value;
-    setLowPassFrequency(Number(value));
-    lowPassValue.textContent = value;
+    const sliderValue = parseFloat(e.target.value);
+    if (!isNaN(sliderValue)) {
+        const frequencyValue = logSliderToFreq(sliderValue);
+        setLowPassFrequency(frequencyValue);
+        lowPassValue.textContent = Math.round(frequencyValue);
+    }
 });
 
 highPassInput.addEventListener('input', (e) => {
-    const value = e.target.value;
-    setHighPassFrequency(Number(value));
-    highPassValue.textContent = value;
+    const sliderValue = parseFloat(e.target.value);
+    if (!isNaN(sliderValue)) {
+        const frequencyValue = logSliderToFreq(sliderValue);
+        setHighPassFrequency(frequencyValue);
+        highPassValue.textContent = Math.round(frequencyValue);
+    }
 });
 
 const resetControlsBtn = document.getElementById('reset-controls');

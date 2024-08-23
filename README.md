@@ -88,28 +88,69 @@ To achieve the best results:
 4. Use the MIDI controls for real-time adjustments during the performance.
 5. Combine with video playback for complex, multimedia performances.
 
+## Audio Filters
+
+SyncWave includes high-pass and low-pass filters for shaping the audio, now with logarithmic scaling for more precise control over lower frequencies:
+
+- Low-Pass Filter: Allows frequencies below the cutoff point to pass through, creating a "muffled" or "warm" sound as you lower the frequency.
+- High-Pass Filter: Allows frequencies above the cutoff point to pass through, useful for removing low-end rumble or creating "thinner" sounds as you raise the frequency.
+
+The filters use a logarithmic scale, which provides:
+- More sensitive control at lower frequencies where small changes are more audible
+- A more natural mapping to how humans perceive pitch
+
+These filters can be controlled via the UI sliders or MIDI control:
+
+- UI Sliders: Found in the control panel, allowing precise adjustment of cutoff frequencies.
+- MIDI Control: 
+  - Slider 5 (CC 17): Controls the Low-Pass Filter
+  - Slider 7 (CC 79): Controls the High-Pass Filter
+
+The filter frequencies range from 20 Hz to 22050 Hz, covering the entire range of human hearing. Due to the logarithmic scaling:
+- The lower half of the slider's range focuses on frequencies from 20 Hz to about 1 kHz
+- The upper half of the slider's range covers frequencies from about 1 kHz to 22050 Hz
+
+This scaling allows for fine-tuning of bass and mid-range frequencies while still providing control over the higher frequencies.
+
+
 ## MIDI Control
 
-SyncWave supports MIDI control for various parameters and actions. Connect a MIDI controller to your computer and use the following mappings:
+SyncWave supports MIDI control for various parameters and actions. The current mapping is optimized for the Worlde Orca PAD48 MIDI controller. Connect your MIDI controller to your computer and use the following mappings:
 
+### Sliders
 - Slider 1 (CC 114): Intensity Threshold
 - Slider 2 (CC 18): Hard Flash Threshold
 - Slider 3 (CC 19): Hue
 - Slider 4 (CC 16): Saturation
-- Slider 5 (CC 17): [Available for future use]
-- Slider 6 (CC 91): Page Scrolling
-- Button 1 (Note 44): Trigger Strobe Effect
-- Button 2 (Note 45): Toggle Flash Effects
+- Slider 5 (CC 17): [Unassigned]
+- Slider 6 (CC 91): Low-Pass Filter (logarithmic scale)
+- Slider 7 (CC 79): High-Pass Filter (logarithmic scale)
+- Slider 8 (CC 72): Page Scrolling
 
-Scrolling Control:
-- Use Slider 6 to control page scrolling
-- The middle position of the slider (around 63) represents no scrolling
-- Moving the slider up from the middle position scrolls the page down
-- Moving the slider down from the middle position scrolls the page up
-- The further you move the slider from the center, the faster the scrolling speed
-- Return the slider to the middle position to stop scrolling
+### Buttons
+- Button 1x1 (Note 44): Trigger Strobe Effect
+- Button 1x2 (Note 45): [Unassigned]
+- Button 1x3 (Note 46): [Unassigned]
+- Button 1x4 (Note 47): [Unassigned]
+- Button 1x5 (Note 76): [Unassigned]
+- Button 1x6 (Note 77): [Unassigned]
+- Button 1x7 (Note 78): [Unassigned]
+- Button 1x8 (Note 79): [Unassigned]
 
-Note: MIDI mappings can be customized in the `main.js` file. The current maximum scroll speed is set to 20 pixels every 50 milliseconds, but you can adjust these values in the `main.js` file to suit your preferences.
+### Control Details
+
+- Intensity Threshold: Adjusts the sensitivity of the audio-reactive effects.
+- Hard Flash Threshold: Sets the point at which the flash effect reaches full intensity.
+- Hue: Changes the color of the flash effect.
+- Saturation: Controls the vibrancy of the color in the flash effect.
+- Low-Pass Filter: Allows frequencies below the cutoff point to pass through. Moving the slider to the right decreases the cutoff frequency, creating a "muffled" or "warm" sound.
+- High-Pass Filter: Allows frequencies above the cutoff point to pass through. Moving the slider to the right increases the cutoff frequency, useful for removing low-end rumble or creating "thinner" sounds.
+- Page Scrolling: Controls the scrolling of the page. The middle position is neutral, moving up scrolls down, and moving down scrolls up.
+- Strobe Effect: Triggers a short burst of rapid flashing.
+
+Note: The filter controls use a logarithmic scale, providing more precise control over lower frequencies where small changes are more audible.
+
+MIDI mappings can be customized in the `main.js` file if you need to adapt the controls for a different MIDI controller or prefer a different layout.
 
 
 ## PWA Installation
