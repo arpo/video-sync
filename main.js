@@ -36,25 +36,53 @@ const hueInput = document.getElementById('hue');
 const hueValue = document.getElementById('hue-value');
 const saturationToggle = document.getElementById('saturation-toggle');
 const saturationValue = document.getElementById('saturation-value');
+
 const strobeButton = document.getElementById('strobe-button');
 const strobeEffect = document.getElementById('strobe-effect');
-
 let strobeTimeout;
 let strobeInterval;
+let strobeEndTime;
+
 function handleMIDIMessage(note, value) {
+    console.log(note, value);
     switch (note) {
-        case 13:  // First knob
+        case 114:  // First Slider
             updateIntensityThreshold(value);
             break;
-        case 3:  // Second knob
+        case 18:  // Second Slider
             updateHardFlashThreshold(value);
             break;
-        case 2:  // Third knob
+        case 19:  // Third Slider
             updateHue(value);
             break;
-        case 1:  // Fourth knob
-            // updateStrobeIntensity(value);
+        case 16:  // Fourth Slider
             break;
+        case 17:  // Fifth Slider
+            break;
+        case 91:  // Sixth Slider
+            break;
+        case 79:  // Seventh Slider
+            break;
+        case 72:  // Eighth Slider
+            break;
+        case 44:  // button 1x1
+            break;
+        case 45:  // button 1x2
+            break;
+        case 46:  // button 1x3
+            break;
+        case 47:  // button 1x4
+            break;
+        case 76:  // button 1x5
+            break;
+        case 77:  // button 1x6
+            break;
+        case 78:  // button 1x7
+            break;
+        case 79:  // button 1x8
+            break;
+
+
     }
 }
 
@@ -107,9 +135,6 @@ function setInitialValues() {
     hueInput.value = INITIAL_VALUES.HUE;
     hueValue.textContent = INITIAL_VALUES.HUE;
 
-    // saturationInput.value = INITIAL_VALUES.SATURATION;
-    // saturationValue.textContent = INITIAL_VALUES.SATURATION;
-
     // Set the actual values in the audio analyzer
     setIntensityThreshold(INITIAL_VALUES.INTENSITY_THRESHOLD);
     setIntensityThresholdMin(INITIAL_VALUES.INTENSITY_THRESHOLD_MIN);
@@ -128,23 +153,31 @@ const resetControlsBtn = document.getElementById('reset-controls');
 strobeButton.addEventListener('click', triggerStrobeEffect);
 
 function triggerStrobeEffect() {
-    if (strobeInterval || strobeTimeout) {
-        return; // Prevent multiple triggers
+    const currentTime = Date.now();
+    
+    if (strobeInterval) {
+        // If strobe is active, extend the duration
+        strobeEndTime = currentTime + 1500; // Extend by 1.5 seconds from now
+        clearTimeout(strobeTimeout);
+        setStrobeTimeout();
+    } else {
+        // Start a new strobe effect
+        setStrobeActive(true);
+        strobeEndTime = currentTime + 1500;
+        
+        // Start the strobe effect
+        strobeInterval = setInterval(() => {
+            strobeEffect.style.opacity = strobeEffect.style.opacity === '0' ? '1' : '0';
+        }, 50); // 20 flashes per second
+        
+        setStrobeTimeout();
     }
-    
-    setStrobeActive(true);
-    strobeButton.disabled = true;
-    
-    // Start the strobe effect
-    strobeInterval = setInterval(() => {
-        strobeEffect.style.opacity = strobeEffect.style.opacity === '0' ? '1' : '0';
-    }, 50); // 20 flashes per second
-    
-    // Stop the effect after 2 seconds
+}
+
+function setStrobeTimeout() {
     strobeTimeout = setTimeout(() => {
         stopStrobeEffect();
-        strobeButton.disabled = false;
-    }, 1500);
+    }, strobeEndTime - Date.now());
 }
 
 function stopStrobeEffect() {
@@ -158,6 +191,7 @@ function stopStrobeEffect() {
     }
     setStrobeActive(false);
     strobeEffect.style.opacity = '0';
+    strobeEndTime = null;
 }
 
 resetControlsBtn.addEventListener('click', () => {
