@@ -27,6 +27,7 @@ let SATURATION = INITIAL_VALUES.SATURATION;
 let LOW_PASS_FREQUENCY = INITIAL_VALUES.LOW_PASS_FREQUENCY;
 let HIGH_PASS_FREQUENCY = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
 
+let usbDevice = null;
 let isFlashEffectsEnabled = true;
 
 export function setFlashEffectsEnabled(enabled) {
@@ -34,35 +35,37 @@ export function setFlashEffectsEnabled(enabled) {
     if (!enabled) {
         // Reset background when disabled
         document.body.style.backgroundColor = '#000000';
+        sendColorToUSBLight(0, 0, 0);
     }
 }
 
-export function setupAudioAnalyzer(audioElement) {
+export function setupAudioAnalyzer(mediaElement) {
+    if (audioContext) {
+        audioContext.close();
+    }
+
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
-    const source = audioContext.createMediaElementSource(audioElement);
 
-    // Create filters
-    lowPassFilter = audioContext.createBiquadFilter();
-    lowPassFilter.type = 'lowpass';
-    lowPassFilter.frequency.value = LOW_PASS_FREQUENCY;
+    if (mediaElement instanceof HTMLVideoElement) {
+        source = audioContext.createMediaElementSource(mediaElement);
+    } else if (mediaElement instanceof HTMLAudioElement) {
+        source = audioContext.createMediaElementSource(mediaElement);
+    } else {
+        console.error('Unsupported media element type');
+        return;
+    }
 
-    highPassFilter = audioContext.createBiquadFilter();
-    highPassFilter.type = 'highpass';
-    highPassFilter.frequency.value = HIGH_PASS_FREQUENCY;
-
-    // Connect nodes: source -> highPassFilter -> lowPassFilter -> analyser -> destination
-    source.connect(highPassFilter);
-    highPassFilter.connect(lowPassFilter);
-    lowPassFilter.connect(analyser);
+    source.connect(analyser);
     analyser.connect(audioContext.destination);
-
 
     analyser.fftSize = 2048;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 
     isAnalyzing = true;
     analyzeBeat();
+
+    console.log("Audio analyzer setup completed successfully");
 }
 
 function analyzeBeat() {
@@ -77,9 +80,7 @@ function analyzeBeat() {
     const bassAverage = bassSum / (endIndex - startIndex);
 
     if (bassAverage > INTENSITY_THRESHOLD) {
-        // Adjust the normalization to account for the new minimum threshold
-        let normalizedIntensity = (bassAverage - INTENSITY_THRESHOLD_MIN) / (255 - INTENSITY_THRESHOLD_MIN);
-        normalizedIntensity = Math.min(Math.max(normalizedIntensity, 0), 1); // Ensure it's between 0 and 1
+        let normalizedIntensity = (bassAverage - INTENSITY_THRESHOLD) / (255 - INTENSITY_THRESHOLD);
         
         if (normalizedIntensity > HARD_FLASH_THRESHOLD) {
             normalizedIntensity = 1;
@@ -91,6 +92,14 @@ function analyzeBeat() {
     }
 
     requestAnimationFrame(analyzeBeat);
+}
+
+export function stopAnalyzing() {
+    isAnalyzing = false;
+    if (audioContext) {
+        audioContext.close();
+    }
+    resetBackground();
 }
 
 export function setLowPassFrequency(value) {
@@ -123,23 +132,70 @@ export function setStrobeActive(active) {
 
 function flashBackground(normalizedIntensity) {
     if (isFlashEffectsEnabled) {
-        // Existing flash effect code
         const brightness = Math.floor(normalizedIntensity * 100);
-        document.body.style.backgroundColor = `hsl(${HUE}, ${SATURATION}%, ${brightness}%)`;
+        const rgb = hslToRgb(HUE / 360, SATURATION / 100, brightness / 100);
+        document.body.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        sendColorToUSBLight(rgb.r, rgb.g, rgb.b);
     }
 }
 
+export async function connectToUSBLight() {
+    try {
+        const device = await navigator.usb.requestDevice({
+            filters: [{ vendorId: 0x27B8 }]  // Example vendorId for BlinkStick
+        });
+        await device.open();
+        await device.selectConfiguration(1);
+        await device.claimInterface(0);
+        usbDevice = device;
+        console.log('USB light connected');
+    } catch (error) {
+        // console.warn('Failed to connect to USB light:', error);
+    }
+}
+
+async function sendColorToUSBLight(r, g, b) {
+    if (!usbDevice) return;
+    
+    const data = new Uint8Array([0x00, r, g, b]);
+    try {
+        await usbDevice.transferOut(1, data);
+    } catch (error) {
+        console.error('Failed to send color to USB light:', error);
+    }
+}
+
+function hslToRgb(h, s, l) {
+    let r, g, b;
+
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
 
 function resetBackground() {
     document.body.style.backgroundColor = '#070707';
-}
-
-export function stopAnalyzing() {
-    isAnalyzing = false;
-    if (audioContext) {
-        audioContext.close();
-    }
-    resetBackground();
 }
 
 export function setIntensityThreshold(value) {

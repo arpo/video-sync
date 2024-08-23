@@ -15,6 +15,7 @@ import {
     setFlashEffectsEnabled,
     setLowPassFrequency,
     setHighPassFrequency,
+    connectToUSBLight,
     INITIAL_VALUES
 } from './audioAnalyzer.js';
 import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
@@ -54,6 +55,7 @@ const highPassInput = document.getElementById('high-pass-filter');
 const highPassValue = document.getElementById('high-pass-value');
 const strobeButton = document.getElementById('strobe-button');
 const strobeEffect = document.getElementById('strobe-effect');
+const connectUSBBtn = document.getElementById('connect-usb');
 let strobeTimeout;
 let strobeInterval;
 let strobeEndTime;
@@ -202,6 +204,10 @@ function stopScrolling() {
     }
     currentScrollSpeed = 0;
 }
+
+connectUSBBtn.addEventListener('click', async () => {
+    await connectToUSBLight();
+});
 
 const flashEffectsToggle = document.getElementById('flash-effects-toggle');
 const toggleLabel = flashEffectsToggle.nextElementSibling;

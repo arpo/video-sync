@@ -120,7 +120,7 @@ export function openAllVideos() {
 export function openVideo(file, index) {
     console.log("Opening video:", file.name);
     const videoUrl = URL.createObjectURL(file);
-    const videoWindow = window.open('/video.html', '_blank', 'width=640,height=480');
+    const videoWindow = window.open('video.html', '_blank', 'width=640,height=480');
     if (!videoWindow) {
         console.error("Failed to open new window. Please check your popup blocker settings.");
         return;
