@@ -1,5 +1,5 @@
 import { initializeUI, updatePreviewWidths } from './uiController.js';
-import { addMedia, openAllVideos, togglePlay, masterAudio, videoWindows, setIsSeeking, getIsSeeking, setOnFileAddedCallback, getDroppedFiles } from './videoController.js';
+import { addMedia, openAllVideos, togglePlay, masterAudio, videoWindows, setIsSeeking, isPlayingMedia, setOnFileAddedCallback, getDroppedFiles } from './videoController.js';
 import { resetWithConfirmation } from './uiController.js';
 import { syncSlaveVideos } from './syncController.js';
 import { 

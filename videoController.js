@@ -16,6 +16,10 @@ export function getDroppedFiles() {
     return droppedFiles;
 }
 
+export function isPlayingMedia() {
+    return isPlaying;
+}
+
 export function setOnFileAddedCallback(callback) {
     onFileAddedCallback = callback;
 }

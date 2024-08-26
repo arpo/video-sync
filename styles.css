@@ -332,17 +332,17 @@ button:hover {
 }
 
 
-.progress-lock-toggle {
+#progress-lock-toggle {
     display: flex;
     align-items: center;
     margin: 10px 0;
 }
 
-.progress-lock-toggle label {
+#progress-lock-toggle label {
     margin-right: 10px;
 }
 
-.progress-lock-toggle input[type="checkbox"] {
+#progress-lock-toggle input[type="checkbox"] {
     appearance: none;
     width: 50px;
     height: 24px;
@@ -353,11 +353,11 @@ button:hover {
     transition: background-color 0.3s;
 }
 
-.progress-lock-toggle input[type="checkbox"]:checked {
+#progress-lock-toggle input[type="checkbox"]:checked {
     background-color: #4CAF50;
 }
 
-.progress-lock-toggle input[type="checkbox"]::before {
+#progress-lock-toggle input[type="checkbox"]::before {
     content: '';
     position: absolute;
     width: 20px;
@@ -369,7 +369,7 @@ button:hover {
     transition: transform 0.3s;
 }
 
-.progress-lock-toggle input[type="checkbox"]:checked::before {
+#progress-lock-toggle input[type="checkbox"]:checked::before {
     transform: translateX(26px);
 }
 

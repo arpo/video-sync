@@ -1,9 +1,12 @@
 let audioContext;
 let analyser;
 let dataArray;
+let source; // Add this line to declare the source variable
 let lowPassFilter;
 let highPassFilter;
 let isAnalyzing = false;
+
+
 
 export const INITIAL_VALUES = {
     INTENSITY_THRESHOLD: 190,
@@ -47,9 +50,7 @@ export function setupAudioAnalyzer(mediaElement) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
 
-    if (mediaElement instanceof HTMLVideoElement) {
-        source = audioContext.createMediaElementSource(mediaElement);
-    } else if (mediaElement instanceof HTMLAudioElement) {
+    if (mediaElement instanceof HTMLVideoElement || mediaElement instanceof HTMLAudioElement) {
         source = audioContext.createMediaElementSource(mediaElement);
     } else {
         console.error('Unsupported media element type');

@@ -1,4 +1,4 @@
-import { closeAllWindows, resetVideoState } from './videoController.js';
+import { closeAllWindows, isPlayingMedia, resetVideoState } from './videoController.js';
 import { formatTime } from './utils.js';
 
 const dropZone = document.getElementById('drop-zone');
@@ -8,9 +8,14 @@ const timeLeftDisplay = document.getElementById('time-left');
 const currentTimeDisplay = document.getElementById('current-time');
 const progressBar = document.getElementById('progress-bar');
 
+function onTick() {
+    progressBar.disabled = isPlayingMedia() ? true : false;
+}
+
 export function initializeUI() {
     updateToggleButton(false);
     resetTimeDisplay();
+    setInterval(onTick, 1000);
 }
 
 export function updatePreviewWidths() {
