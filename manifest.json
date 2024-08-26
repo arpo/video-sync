@@ -2,7 +2,7 @@
   "name": "SyncWave",
   "short_name": "SyncWave",
   "description": "Multi-Screen Video Sync & Performance Visual Tool",
-  "start_url": "/index.html",
+  "start_url": "https://kualia.one/syncwave/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#4CAF50",

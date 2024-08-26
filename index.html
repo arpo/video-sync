@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#4CAF50">
     <meta name="msapplication-navbutton-color" content="#4CAF50">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="msapplication-starturl" content="/index.html">
+    <meta name="msapplication-starturl" content="index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="icon" sizes="192x192" href="icon-192x192.png">
@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&amp;display=swap" rel="stylesheet">
     <title>SyncWave</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             transition: background-color 0.1s ease;
@@ -51,6 +51,11 @@
         <span>Left: <span id="time-left">00:00:00</span></span>
     </div>
     <input type="range" id="progress-bar" class="large" min="0" max="100" value="0">
+    <div class="progress-lock-toggle">
+        <label for="lock-progress-toggle">Lock Progress:</label>
+        <input type="checkbox" id="lock-progress-toggle" checked>
+        <span class="toggle-label">ON</span>
+    </div>
     <div>
         <button id="open-all">Open All Videos</button>
         <button id="toggle-play">Play</button>
