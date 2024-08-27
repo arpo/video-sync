@@ -30,7 +30,6 @@ let SATURATION = INITIAL_VALUES.SATURATION;
 let LOW_PASS_FREQUENCY = INITIAL_VALUES.LOW_PASS_FREQUENCY;
 let HIGH_PASS_FREQUENCY = INITIAL_VALUES.HIGH_PASS_FREQUENCY;
 
-let usbDevice = null;
 let isFlashEffectsEnabled = true;
 
 export function setFlashEffectsEnabled(enabled) {
@@ -38,7 +37,6 @@ export function setFlashEffectsEnabled(enabled) {
     if (!enabled) {
         // Reset background when disabled
         document.body.style.backgroundColor = '#000000';
-        sendColorToUSBLight(0, 0, 0);
     }
 }
 
@@ -136,33 +134,6 @@ function flashBackground(normalizedIntensity) {
         const brightness = Math.floor(normalizedIntensity * 100);
         const rgb = hslToRgb(HUE / 360, SATURATION / 100, brightness / 100);
         document.body.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-        sendColorToUSBLight(rgb.r, rgb.g, rgb.b);
-    }
-}
-
-export async function connectToUSBLight() {
-    try {
-        const device = await navigator.usb.requestDevice({
-            filters: [{ vendorId: 0x27B8 }]  // Example vendorId for BlinkStick
-        });
-        await device.open();
-        await device.selectConfiguration(1);
-        await device.claimInterface(0);
-        usbDevice = device;
-        console.log('USB light connected');
-    } catch (error) {
-        // console.warn('Failed to connect to USB light:', error);
-    }
-}
-
-async function sendColorToUSBLight(r, g, b) {
-    if (!usbDevice) return;
-    
-    const data = new Uint8Array([0x00, r, g, b]);
-    try {
-        await usbDevice.transferOut(1, data);
-    } catch (error) {
-        console.error('Failed to send color to USB light:', error);
     }
 }
 

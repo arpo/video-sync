@@ -1,10 +1,18 @@
 import { masterAudio, videoWindows, syncPreviewVideos } from './videoController.js';
 
+let syncOffset = 0;
+const SYNC_THRESHOLD = 0.5; 
+
+export function setSyncOffset(offset) {
+    syncOffset = offset / 1000; // Convert ms to seconds
+}
+
+
 export function syncSlaveVideos() {
     const masterTime = masterAudio ? masterAudio.currentTime : 
         (videoWindows[0] && videoWindows[0].document.querySelector('video')) ? 
         videoWindows[0].document.querySelector('video').currentTime : 0;
-    
+
     const isPlaying = masterAudio ? !masterAudio.paused : 
         (videoWindows[0] && videoWindows[0].document.querySelector('video')) ? 
         !videoWindows[0].document.querySelector('video').paused : false;
@@ -13,11 +21,16 @@ export function syncSlaveVideos() {
         if (win && !win.closed) {
             const slaveVideo = win.document.querySelector('video');
             if (slaveVideo) {
-                if (Math.abs(slaveVideo.currentTime - masterTime) > 0.5) {
-                    slaveVideo.currentTime = masterTime;
+                // Include syncOffset in the condition check
+                if (Math.abs((slaveVideo.currentTime - syncOffset) - masterTime) > SYNC_THRESHOLD) {
+                    // Adjust the slave video time while maintaining the offset
+                    slaveVideo.currentTime = masterTime + syncOffset;
                 }
-                if (isPlaying !== !slaveVideo.paused) {
-                    isPlaying ? slaveVideo.play() : slaveVideo.pause();
+
+                if (isPlaying && slaveVideo.paused) {
+                    slaveVideo.play().catch(e => console.error("Error playing video:", e));
+                } else if (!isPlaying && !slaveVideo.paused) {
+                    slaveVideo.pause();
                 }
             }
         }

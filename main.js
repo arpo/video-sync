@@ -1,6 +1,5 @@
 import {
     INITIAL_VALUES,
-    connectToUSBLight,
     getBassRangeFrequencies,
     setBassRangeEnd,
     setBassRangeStart,
@@ -15,7 +14,7 @@ import {
     setStrobeActive
 } from './audioAnalyzer.js';
 import { initializeMIDI, mapMIDIValueToRange, setMIDIMessageCallback } from './midiController.js';
-import { syncSlaveVideos } from './syncController.js';
+import { syncSlaveVideos, setSyncOffset } from './syncController.js';
 import { initializeUI, resetWithConfirmation, updatePreviewWidths } from './uiController.js';
 import { addMedia, getDroppedFiles, masterAudio, openAllVideos, setIsSeeking, setOnFileAddedCallback, togglePlay, videoWindows } from './videoController.js';
 
@@ -54,20 +53,27 @@ const highPassInput = document.getElementById('high-pass-filter');
 const highPassValue = document.getElementById('high-pass-value');
 const strobeButton = document.getElementById('strobe-button');
 const strobeEffect = document.getElementById('strobe-effect');
-const connectUSBBtn = document.getElementById('connect-usb');
+const syncOffsetInput = document.getElementById('sync-offset');
+
+syncOffsetInput.addEventListener('change', (e) => {
+    const offsetValue = parseInt(e.target.value, 10);
+    setSyncOffset(offsetValue);
+});
+
+
 let strobeTimeout;
 let strobeInterval;
 let strobeEndTime;
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', function() {
+//       navigator.serviceWorker.register('/sw.js').then(function(registration) {
+//         console.log('ServiceWorker registration successful with scope: ', registration.scope);
+//       }, function(err) {
+//         console.log('ServiceWorker registration failed: ', err);
+//       });
+//     });
+//   }
 
 // MIDI mapping mad for Worlde Orca PAD48
 function handleMIDIMessage(note, value) {
@@ -203,10 +209,6 @@ function stopScrolling() {
     }
     currentScrollSpeed = 0;
 }
-
-connectUSBBtn.addEventListener('click', async () => {
-    await connectToUSBLight();
-});
 
 const flashEffectsToggle = document.getElementById('flash-effects-toggle');
 const toggleLabel = flashEffectsToggle.nextElementSibling;

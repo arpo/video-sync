@@ -12,6 +12,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-starturl" content="index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <link rel="icon" sizes="192x192" href="icon-192x192.png">
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
@@ -20,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&amp;display=swap" rel="stylesheet">
     <title>SyncWave</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
+    <!-- <link rel="manifest" href="manifest.json"> -->
     <style>
         body {
             transition: background-color 0.1s ease;
@@ -55,7 +58,10 @@
         <button id="open-all">Open All Videos</button>
         <button id="toggle-play">Play</button>
         <button id="initBtn">Stop/Close All</button>
-        <button id="connect-usb">Connect USB Light</button>
+        <span class="offset-control">
+            <label for="sync-offset">Sync Offset (ms):</label>
+            <input type="number" id="sync-offset" name="sync-offset" value="0" step="10">
+        </spans>
     </div>
     <div class="control-panel">
 

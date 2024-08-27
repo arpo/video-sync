@@ -49,7 +49,7 @@ body {
     margin-top: 20px;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    border-radius: 10px;
     width: 100%;
 }
 .control-panel label {
@@ -116,7 +116,7 @@ body {
     margin: 10px 0;
     padding: 5px 10px;
     background-color: #161616;
-    border-radius: 5px;
+    border-radius: 10px;
     text-align: center;
     width: 100%;
     display: flex;
@@ -162,7 +162,7 @@ input[type="range"]::-moz-range-thumb {
 /* Large range input */
 input[type="range"].large {
     margin: 20px 0;
-    border-radius: 17px;
+    border-radius: 10px;
     padding: 5px;
 }
 
@@ -357,3 +357,21 @@ button:hover {
     color: #888;
 }
 
+.offset-control {
+    margin: 10px 0;
+    display: inline-flex;
+    align-items: center;
+}
+
+.offset-control label {
+    margin-right: 10px;
+}
+
+.offset-control input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    border: none;
+    border-radius: 10px;
+    background: #4a4a4a;
+    color: #ffffff;
+}
