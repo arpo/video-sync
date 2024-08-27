@@ -1,24 +1,23 @@
-import { initializeUI, updatePreviewWidths } from './uiController.js';
-import { addMedia, openAllVideos, togglePlay, masterAudio, videoWindows, setIsSeeking, isPlayingMedia, setOnFileAddedCallback, getDroppedFiles } from './videoController.js';
-import { resetWithConfirmation } from './uiController.js';
-import { syncSlaveVideos } from './syncController.js';
-import { 
-    setIntensityThreshold, 
-    setIntensityThresholdMin,  
-    setBassRangeStart, 
-    setBassRangeEnd, 
-    setHardFlashThreshold, 
-    setHue,
-    setSaturation,
-    getBassRangeFrequencies,
-    setStrobeActive,
-    setFlashEffectsEnabled,
-    setLowPassFrequency,
-    setHighPassFrequency,
+import {
+    INITIAL_VALUES,
     connectToUSBLight,
-    INITIAL_VALUES
+    getBassRangeFrequencies,
+    setBassRangeEnd,
+    setBassRangeStart,
+    setFlashEffectsEnabled,
+    setHardFlashThreshold,
+    setHighPassFrequency,
+    setHue,
+    setIntensityThreshold,
+    setIntensityThresholdMin,
+    setLowPassFrequency,
+    setSaturation,
+    setStrobeActive
 } from './audioAnalyzer.js';
-import { initializeMIDI, setMIDIMessageCallback, mapMIDIValueToRange } from './midiController.js';
+import { initializeMIDI, mapMIDIValueToRange, setMIDIMessageCallback } from './midiController.js';
+import { syncSlaveVideos } from './syncController.js';
+import { initializeUI, resetWithConfirmation, updatePreviewWidths } from './uiController.js';
+import { addMedia, getDroppedFiles, masterAudio, openAllVideos, setIsSeeking, setOnFileAddedCallback, togglePlay, videoWindows } from './videoController.js';
 
 const config = {
     STROBE_DURATION: 1200
@@ -480,5 +479,3 @@ window.addEventListener('resize', updatePreviewWidths);
 
 initializeUI();
 updateFileList();
-
-console.log("Script finished loading");

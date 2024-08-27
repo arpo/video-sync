@@ -176,6 +176,32 @@ input[type="range"].large::-moz-range-thumb {
     height: 25px;
 }
 
+/* Disabled state styles */
+input[type="range"]:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+    background: #ddd;
+    cursor: not-allowed;
+}
+
+input[type="range"]:disabled::-moz-range-thumb {
+    background: #ddd;
+    cursor: not-allowed;
+}
+
+/* Optional: Add a visual indicator for the disabled state */
+input[type="range"]:disabled::before {
+    content: '🔒';
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+
 button {
     margin: 5px;
     padding: 8px 15px;
@@ -331,48 +357,3 @@ button:hover {
     color: #888;
 }
 
-
-#progress-lock-toggle {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-
-#progress-lock-toggle label {
-    margin-right: 10px;
-}
-
-#progress-lock-toggle input[type="checkbox"] {
-    appearance: none;
-    width: 50px;
-    height: 24px;
-    background-color: #ccc;
-    border-radius: 12px;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#progress-lock-toggle input[type="checkbox"]:checked {
-    background-color: #4CAF50;
-}
-
-#progress-lock-toggle input[type="checkbox"]::before {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
-    background-color: white;
-    transition: transform 0.3s;
-}
-
-#progress-lock-toggle input[type="checkbox"]:checked::before {
-    transform: translateX(26px);
-}
-
-.toggle-label {
-    margin-left: 10px;
-}
