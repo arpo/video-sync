@@ -24,9 +24,35 @@
     </style>
 </head>
 <body>
-    <video></video>
+    <video id="video-player"></video>
     <script>
-        const video = document.querySelector('video');
+        const video = document.getElementById('video-player');
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.mozRequestFullScreen) { // Firefox
+                    video.mozRequestFullScreen();
+                } else if (video.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    video.webkitRequestFullscreen();
+                } else if (video.msRequestFullscreen) { // IE/Edge
+                    video.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        video.addEventListener('dblclick', toggleFullscreen);
         video.addEventListener('loadedmetadata', () => {
             // Notify the parent window that the video is ready
             window.opener.postMessage({ type: 'videoReady', duration: video.duration }, '*');
