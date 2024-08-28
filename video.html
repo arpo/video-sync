@@ -16,17 +16,18 @@
             background-color: #000;
         }
         #video-container {
-            width: 100%;
-            height: 100%;
+            width: calc(100% - 0px);
+            height: calc(100% - 0px);
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            margin: 0px 0 0 0px;
         }
         video {
             max-height: 100%;
             width: auto;
             height: auto;
-            margin: 20px;
+            margin: 0px;
         }
     </style>
 </head>
@@ -37,6 +38,12 @@
     <script>
         const videoContainer = document.getElementById('video-container');
         const video = document.getElementById('video-player');
+
+        function setMargin(margin) {
+            videoContainer.style.width = `calc(100% - ${margin}px)`;
+            videoContainer.style.height = `calc(100% - ${margin}px)`;
+            videoContainer.style.margin = `${margin / 2}px 0 0 ${margin / 2}px`;
+        }
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
@@ -78,6 +85,8 @@
                 video.pause();
             } else if (event.data.type === 'seek') {
                 video.currentTime = event.data.time;
+            } else if (event.data.type === 'setMargin') {
+                setMargin(event.data.margin);
             }
         });
     </script>

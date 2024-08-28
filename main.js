@@ -60,6 +60,21 @@ syncOffsetInput.addEventListener('change', (e) => {
     setSyncOffset(offsetValue);
 });
 
+const videoMarginInput = document.getElementById('video-margin');
+
+videoMarginInput.addEventListener('change', (e) => {
+    const marginValue = parseInt(e.target.value, 10);
+    setVideoMargin(marginValue);
+});
+
+function setVideoMargin(margin) {
+    videoWindows.forEach(win => {
+        if (win && !win.closed) {
+            win.postMessage({ type: 'setMargin', margin: margin }, '*');
+        }
+    });
+}
+
 
 let strobeTimeout;
 let strobeInterval;
