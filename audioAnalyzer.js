@@ -48,14 +48,21 @@ export function setupAudioAnalyzer(mediaElement) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
 
-    if (mediaElement instanceof HTMLVideoElement || mediaElement instanceof HTMLAudioElement) {
-        source = audioContext.createMediaElementSource(mediaElement);
-    } else {
-        console.error('Unsupported media element type');
-        return;
-    }
+    const source = audioContext.createMediaElementSource(mediaElement);
 
-    source.connect(analyser);
+    // Create filters
+    lowPassFilter = audioContext.createBiquadFilter();
+    lowPassFilter.type = 'lowpass';
+    lowPassFilter.frequency.value = LOW_PASS_FREQUENCY;
+
+    highPassFilter = audioContext.createBiquadFilter();
+    highPassFilter.type = 'highpass';
+    highPassFilter.frequency.value = HIGH_PASS_FREQUENCY;
+
+    // Connect nodes: source -> highPassFilter -> lowPassFilter -> analyser -> destination
+    source.connect(highPassFilter);
+    highPassFilter.connect(lowPassFilter);
+    lowPassFilter.connect(analyser);
     analyser.connect(audioContext.destination);
 
     analyser.fftSize = 2048;
@@ -102,9 +109,11 @@ export function stopAnalyzing() {
 }
 
 export function setLowPassFrequency(value) {
+
     if (isFinite(value) && value >= 0) {
         LOW_PASS_FREQUENCY = value;
         if (lowPassFilter && audioContext) {
+            console.log("Setting low pass frequency");
             lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
         }
     } else {
