@@ -1,7 +1,7 @@
 import { masterAudio, videoWindows, syncPreviewVideos } from './videoController.js';
 
 let syncOffset = 0;
-const SYNC_THRESHOLD = 0.5; 
+const SYNC_THRESHOLD = 0.1; 
 
 export function setSyncOffset(offset) {
     syncOffset = offset / 1000; // Convert ms to seconds
