@@ -193,14 +193,14 @@ input[type="range"]:disabled::-moz-range-thumb {
 }
 
 /* Optional: Add a visual indicator for the disabled state */
-input[type="range"]:disabled::before {
+/* input[type="range"]:disabled::before {
     content: '🔒';
     position: absolute;
     right: -30px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
-}
+} */
 
 button {
     margin: 5px;

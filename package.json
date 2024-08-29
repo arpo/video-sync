@@ -1,0 +1,11 @@
+{
+  "name": "syncwave",
+  "version": "1.0.0",
+  "description": "Video synchronization application",
+  "scripts": {
+    "start": "http-server -p 8081 -c-1"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
