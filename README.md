@@ -41,7 +41,7 @@ SyncWave is a powerful web-based tool designed for synchronizing multiple video 
 4. Start your local web server. If using `http-server`, simply run:
    
    ```
-   http-server
+   http-server -p 8081 -c-1
    ```
 
 5. Open your web browser and go to the address provided by your local server (typically `http://localhost:8080` or similar).
