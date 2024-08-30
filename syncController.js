@@ -1,12 +1,12 @@
 import { masterAudio, videoWindows, syncPreviewVideos } from './videoController.js';
 
 let syncOffset = 0;
-const SYNC_THRESHOLD = 0.5;
-const THROTTLE_INTERVAL = 500;
+const SYNC_THRESHOLD = 0.1; // Reduced threshold for tighter sync
+const THROTTLE_INTERVAL = 250; // Reduced interval for more frequent checks
 let lastSyncTime = 0;
 
 export function setSyncOffset(offset) {
-    syncOffset = offset / 1000;
+    syncOffset = offset / 1000; // Convert ms to seconds
     console.log(`Sync offset set to ${syncOffset} seconds`);
 }
 
@@ -44,9 +44,12 @@ export function syncSlaveVideos() {
         if (win && !win.closed) {
             const slaveVideo = win.document.querySelector('video');
             if (slaveVideo) {
-                const timeDiff = Math.abs((slaveVideo.currentTime - syncOffset) - masterTime);
-                if (timeDiff > SYNC_THRESHOLD) {
-                    slaveVideo.currentTime = masterTime + syncOffset;
+                const targetTime = masterTime + syncOffset;
+                const currentDiff = Math.abs(slaveVideo.currentTime - targetTime);
+
+                if (currentDiff > SYNC_THRESHOLD) {
+                    slaveVideo.currentTime = targetTime;
+                    console.log(`Adjusted slave ${index}. Current: ${slaveVideo.currentTime.toFixed(2)}, Target: ${targetTime.toFixed(2)}, Diff: ${currentDiff.toFixed(2)}`);
                 }
 
                 if (isPlaying && slaveVideo.paused) {
