@@ -48,6 +48,11 @@
     <div id="file-list">
         <ul id="dropped-files-list"></ul>
     </div>
+    <div>
+        <button id="open-all">Open All Videos</button>
+        <button id="toggle-play">Play</button>
+        <button id="initBtn">Stop/Close All</button>
+    </div>
     <div id="time-display">
         <span>Current: <span id="current-time">00:00:00</span></span>
         <span>Total: <span id="total-time">00:00:00</span></span>
@@ -55,11 +60,7 @@
     </div>
     <input type="range" id="progress-bar" class="large" min="0" max="100" value="0">
     <div>
-        <button id="open-all">Open All Videos</button>
-        <button id="toggle-play">Play</button>
-        <button id="initBtn">Stop/Close All</button>
         <button id="strobe-button">Trigger Strobe</button>
-        <button id="reset-controls">Reset Controls</button>
         <span class="offset-control">
             <label for="sync-offset">Sync Offset (ms):</label>
             <input type="number" id="sync-offset" name="sync-offset" value="0" step="10" min="-500" max="500">
@@ -69,6 +70,7 @@
             <label for="video-margin">Video Margin (px):</label>
             <input type="number" id="video-margin" name="video-margin" value="0" min="0" step="1">
         </span>
+        <button id="reset-controls">Reset Controls</button>
     </div>
     <div class="control-panel">
 
